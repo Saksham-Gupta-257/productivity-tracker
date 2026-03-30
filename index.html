@@ -71,10 +71,7 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-size: 15px; }
 
-        body {
-            font-family: 'DM Mono', monospace; min-height: 100vh; background: var(--body-bg);
-            color: var(--text-primary); transition: background 0.5s, color 0.3s; padding: 20px;
-        }
+        body { font-family: 'DM Mono', monospace; min-height: 100vh; background: var(--body-bg); color: var(--text-primary); transition: background 0.5s, color 0.3s; padding: 20px; }
         [data-theme="dark"] body::before { content: ''; position: fixed; inset: 0; background: var(--bg-overlay); z-index: 0; pointer-events: none; }
         [data-theme="light"] body { background: var(--body-bg); }
 
@@ -82,85 +79,42 @@
         ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
 
-        /* UI Utilities */
         .hidden { display: none !important; }
 
-        /* Login Screen */
-        .login-container {
-            position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 50;
-        }
-        .login-card {
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: var(--glass-shadow); padding: 50px 40px; text-align: center; max-width: 400px; width: 90%;
-            animation: modalIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
-        }
+        .login-container { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 50; }
+        .login-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); padding: 50px 40px; text-align: center; max-width: 400px; width: 90%; animation: modalIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
         .login-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 10px; }
         .login-subtitle { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 40px; }
-        .btn-google {
-            background: #fff; color: #333; border: none; border-radius: 10px; padding: 12px 24px;
-            font-family: 'DM Mono', monospace; font-size: 1rem; cursor: pointer; font-weight: bold;
-            display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+        .btn-google { background: #fff; color: #333; border: none; border-radius: 10px; padding: 12px 24px; font-family: 'DM Mono', monospace; font-size: 1rem; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: transform 0.2s, box-shadow 0.2s; }
         .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
         .btn-google img { width: 24px; height: 24px; }
 
-        .app {
-            position: relative; z-index: 1; width: 100%; max-width: 1700px;
-            margin: 0 auto; display: flex; flex-direction: column; gap: 24px; min-width: 320px;
-        }
+        .app { position: relative; z-index: 1; width: 100%; max-width: 1700px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; min-width: 320px; }
 
-        .top-bar {
-            display: flex; align-items: center; justify-content: space-between; padding: 14px 24px;
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px;
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: var(--glass-shadow); width: 100%; 
-        }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); width: 100%; }
         .brand { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; letter-spacing: 0.04em; color: var(--accent); }
         .brand span { color: var(--text-primary); font-weight: 400; }
         
         .user-controls { display: flex; align-items: center; gap: 16px; }
         .user-email { font-size: 0.8rem; color: var(--text-secondary); display: none; }
 
-        .theme-btn {
-            background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent);
-            border-radius: 10px; padding: 8px 16px; font-family: 'DM Mono', monospace; font-size: 0.8rem;
-            cursor: pointer; transition: all 0.25s; letter-spacing: 0.05em; font-weight: bold;
-        }
+        .theme-btn { background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent); border-radius: 10px; padding: 8px 16px; font-family: 'DM Mono', monospace; font-size: 0.8rem; cursor: pointer; transition: all 0.25s; letter-spacing: 0.05em; font-weight: bold; }
         .theme-btn:hover { background: var(--accent-glow); transform: translateY(-1px); }
 
         .top-row { display: flex; gap: 24px; width: 100%; align-items: stretch; }
-        
-        .panel {
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: var(--glass-shadow); overflow: hidden;
-            transition: background 0.3s, border-color 0.3s; display: flex; flex-direction: column;
-        }
+        .panel { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); overflow: hidden; transition: background 0.3s, border-color 0.3s; display: flex; flex-direction: column; }
         
         #timerPanel { flex: 0 0 calc(25% - 12px); max-width: calc(25% - 12px); padding: 28px; justify-content: space-between; }
         #heatmapPanel { flex: 0 0 calc(75% - 12px); max-width: calc(75% - 12px); padding: 28px; justify-content: space-between; }
 
-        .panel-title {
-            font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em;
-            text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
-        }
+        .panel-title { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .panel-title::after { content: ''; flex: 1; height: 1px; background: var(--glass-border); }
 
-        select, input[type="text"] {
-            background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);
-            border-radius: 10px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 0.85rem;
-            outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none;
-        }
+        select, input[type="text"] { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); border-radius: 10px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; }
         select:focus, input[type="text"]:focus { border-color: var(--accent-glow); background: var(--accent-dim); }
         select option { background: #1a1f3a; color: #fff; }
 
-        .btn {
-            background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent);
-            border-radius: 10px; padding: 10px 18px; font-family: 'DM Mono', monospace; font-size: 0.85rem;
-            cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.04em; font-weight: bold;
-        }
+        .btn { background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent); border-radius: 10px; padding: 10px 18px; font-family: 'DM Mono', monospace; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.04em; font-weight: bold; }
         .btn:hover { background: var(--accent-glow); transform: translateY(-2px); box-shadow: 0 6px 16px var(--accent-glow); }
         .btn:active { transform: translateY(0); }
         .btn.danger { background: var(--danger-dim); border-color: rgba(255,95,109,0.3); color: var(--danger); }
@@ -168,35 +122,29 @@
         .btn.neutral { background: var(--input-bg); border-color: var(--input-border); color: var(--text-secondary); }
         .btn.neutral:hover { background: var(--glass-border); color: var(--text-primary); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
 
-        /* Timer */
+        /* Updated Timer Styles for Task Select */
         .timer-content-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; align-items: center; width: 100%; }
-        .timer-date { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 16px; letter-spacing: 0.05em; text-align: center; width: 100%;}
-        .timer-select-row { margin-bottom: 20px; width: 100%; text-align: center; }
-        .timer-select-row select { width: 85%; }
-        .timer-circle-wrap { display: flex; justify-content: center; align-items: center; margin: 10px 0 25px; }
+        .timer-date { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em; text-align: center; width: 100%;}
+        .timer-select-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; width: 100%; align-items: center; }
+        .timer-select-row select { width: 90%; text-align: center;}
+        
+        .timer-circle-wrap { display: flex; justify-content: center; align-items: center; margin: 0px 0 25px; }
         .timer-svg-container { position: relative; width: 180px; height: 180px; }
         .timer-svg { width: 180px; height: 180px; transform: rotate(-90deg); }
         .timer-track { fill: none; stroke: var(--timer-track); stroke-width: 8; }
-        .timer-progress {
-            fill: none; stroke: var(--timer-stroke); stroke-width: 8; stroke-linecap: round;
-            transition: stroke-dashoffset 0.9s linear; filter: drop-shadow(0 0 8px var(--accent-glow));
-        }
+        .timer-progress { fill: none; stroke: var(--timer-stroke); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.9s linear; filter: drop-shadow(0 0 8px var(--accent-glow)); }
         .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
         .timer-digits { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.04em; }
         .timer-label { font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.1em; margin-top: 4px; font-weight: bold;}
         .timer-controls { display: flex; gap: 12px; justify-content: center; width: 100%; }
 
-        /* Heatmap */
         .heatmap-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .heatmap-top select { min-width: 120px; }
         .heatmap-scroll { overflow-x: auto; padding-bottom: 10px; margin: auto 0; width: 100%;}
         .heatmap-months { display: flex; gap: 20px; width: max-content; }
         .month-label { font-size: 0.8rem; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 10px; font-family: 'Syne', sans-serif; font-weight: 700; text-transform: uppercase; }
         .month-grid { display: grid; grid-template-columns: repeat(6, 18px); grid-template-rows: repeat(7, 18px); gap: 4px; }
-        .heat-cell {
-            width: 18px; height: 18px; border-radius: 4px; background: var(--heat-0);
-            transition: background 0.3s, transform 0.15s; cursor: default; position: relative;
-        }
+        .heat-cell { width: 18px; height: 18px; border-radius: 4px; background: var(--heat-0); transition: background 0.3s, transform 0.15s; cursor: default; position: relative; }
         .heat-cell:not(.empty):hover { transform: scale(1.2); z-index: 10; border: 1px solid var(--text-primary);}
         .heat-cell.l1 { background: var(--heat-1); }
         .heat-cell.l2 { background: var(--heat-2); }
@@ -206,7 +154,6 @@
         .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 0.8rem; color: var(--text-secondary); justify-content: flex-end;}
         .legend-cell { width: 14px; height: 14px; border-radius: 3px; }
 
-        /* Tracker */
         .tracker-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
         #trackerPanel { width: 100%; padding: 28px; display: block; } 
         .task-input { flex: 1; min-width: 200px; }
@@ -230,6 +177,8 @@
         .progress-cell { min-width: 120px; }
         .progress-bar-wrap { background: var(--progress-bg); border-radius: 12px; height: 12px; overflow: hidden; width: 100px; margin: 0 auto; border: 1px solid var(--glass-border);}
         .progress-bar-fill { height: 100%; background: var(--progress-fill); border-radius: 12px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .time-cell { font-family: 'DM Mono', monospace; font-weight: bold; color: var(--accent); font-size: 0.8rem; min-width: 80px;}
 
         .delete-task-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.4rem; padding: 4px 8px; border-radius: 6px; transition: color 0.2s, background 0.2s; line-height: 1; }
         .delete-task-btn:hover { color: var(--danger); background: var(--danger-dim); }
@@ -281,6 +230,9 @@
                 <div class="timer-content-wrapper">
                     <div class="timer-date" id="current-date">Loading...</div>
                     <div class="timer-select-row">
+                        <select id="timer-task-select">
+                            <option value="">-- General Focus --</option>
+                        </select>
                         <select id="timer-duration" onchange="setTimerDuration()">
                             <option value="1800">30 Minutes</option>
                             <option value="3600">1 Hour</option>
@@ -365,8 +317,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-        // Import Authentication Modules
+        // Added onSnapshot to imports for real-time syncing
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
         // 🚨 REPLACE THIS OBJECT WITH YOUR FIREBASE CONFIG 🚨
@@ -381,86 +333,76 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // Initialize Firebase Auth
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
         let tasksDocRef = null;
+        let unsubscribeSnapshot = null; // Used to stop listening when logged out
         let tasks = [];
         const today = new Date();
         let selectedYear = today.getFullYear();
         let selectedMonth = today.getMonth();
         let taskToDeleteId = null; 
 
-        // --- AUTHENTICATION LISTENER ---
-        // This runs automatically to check if you are logged in
-        onAuthStateChanged(auth, async (user) => {
+        // --- AUTHENTICATION & REAL-TIME LISTENER ---
+        onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in.
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 document.getElementById('user-email').innerText = user.email;
                 
-                // Set the database reference to THIS user's unique ID
                 tasksDocRef = doc(db, "users", user.uid);
+                document.getElementById("task-list").innerHTML = "<tr><td colspan='4'>Syncing your real-time data...</td></tr>";
                 
-                document.getElementById("task-list").innerHTML = "<tr><td colspan='3'>Syncing your data...</td></tr>";
-                await loadTasksFromCloud();
+                // Real-time Database Listener
+                unsubscribeSnapshot = onSnapshot(tasksDocRef, (docSnap) => {
+                    if (docSnap.exists() && docSnap.data().tasks) {
+                        const savedData = docSnap.data().tasks;
+                        // Map old data format to new format that includes timeSpent
+                        tasks = savedData.map(t => ({ 
+                            id: t.id, 
+                            name: t.name, 
+                            completed: new Set(t.completed),
+                            timeSpent: t.timeSpent || 0 // Default to 0 seconds if older task
+                        }));
+                    } else {
+                        // Create default tasks if new user
+                        tasks = [
+                            { id: 1, name: "Morning Exercise", completed: new Set(), timeSpent: 0 },
+                            { id: 2, name: "Read 10 Pages", completed: new Set(), timeSpent: 0 }
+                        ];
+                        saveTasksToCloud(); 
+                    }
+                    
+                    // Update UI immediately whenever data changes across any device
+                    renderTracker();
+                    renderHeatmap();
+                    updateTimerDropdown();
+                });
+
             } else {
-                // User is signed out.
                 document.getElementById('login-screen').classList.remove('hidden');
                 document.getElementById('main-app').classList.add('hidden');
+                if(unsubscribeSnapshot) unsubscribeSnapshot(); // Stop listening to DB
                 tasksDocRef = null;
                 tasks = [];
             }
         });
 
-        // Login & Logout Functions
         async function loginWithGoogle() {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                console.error("Login Error:", error);
-                alert("Login Failed: " + error.message);
-            }
+            try { await signInWithPopup(auth, provider); } 
+            catch (error) { alert("Login Failed: " + error.message); }
         }
 
         async function logout() {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Logout Error:", error);
-            }
-        }
-        
-        // --- DATABASE SYNC FUNCTIONS ---
-        async function loadTasksFromCloud() {
-            if (!tasksDocRef) return;
-            try {
-                const docSnap = await getDoc(tasksDocRef);
-                if (docSnap.exists() && docSnap.data().tasks) {
-                    const savedData = docSnap.data().tasks;
-                    tasks = savedData.map(t => ({ id: t.id, name: t.name, completed: new Set(t.completed) }));
-                } else {
-                    // Create default tasks if new user
-                    tasks = [
-                        { id: 1, name: "Morning Exercise", completed: new Set() },
-                        { id: 2, name: "Read 10 Pages", completed: new Set() }
-                    ];
-                    await saveTasksToCloud();
-                }
-            } catch (error) {
-                console.error("Error loading data:", error);
-            }
-            renderTracker();
-            renderHeatmap();
+            try { await signOut(auth); } 
+            catch (error) { console.error("Logout Error:", error); }
         }
 
         async function saveTasksToCloud() {
             if (!tasksDocRef) return;
             try {
-                const dataToSave = tasks.map(t => ({ id: t.id, name: t.name, completed: Array.from(t.completed) }));
+                const dataToSave = tasks.map(t => ({ id: t.id, name: t.name, completed: Array.from(t.completed), timeSpent: t.timeSpent }));
                 await setDoc(tasksDocRef, { tasks: dataToSave }, { merge: true });
             } catch (error) {
                 console.error("Error saving data:", error);
@@ -487,16 +429,33 @@
             loadTheme();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById("current-date").innerText = today.toLocaleDateString('en-US', options);
-            
             populateYearDropdown();
             document.getElementById("month-select").value = selectedMonth;
             setTimerDuration();
         };
 
-        // --- TIMER LOGIC ---
+        // --- CONNECTED TIMER LOGIC ---
         let timeLimit = 1800; 
         let timeLeft = timeLimit; 
         let timerInterval = null;
+
+        function updateTimerDropdown() {
+            const select = document.getElementById("timer-task-select");
+            const currentSelection = select.value;
+            
+            select.innerHTML = '<option value="">-- General Focus --</option>';
+            tasks.forEach(task => {
+                let opt = document.createElement("option");
+                opt.value = task.id;
+                opt.innerText = task.name;
+                select.appendChild(opt);
+            });
+            
+            // Restore selection if the task still exists
+            if (tasks.find(t => t.id == currentSelection)) {
+                select.value = currentSelection;
+            }
+        }
 
         function setTimerDuration() {
             pauseTimer();
@@ -523,11 +482,27 @@
 
         function startTimer() {
             if (timerInterval) return;
+            const selectedTaskId = document.getElementById("timer-task-select").value;
+
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
                     timeLeft--; updateTimerDisplay();
                 } else {
-                    clearInterval(timerInterval); timerInterval = null; alert("Focus session complete!");
+                    clearInterval(timerInterval); 
+                    timerInterval = null; 
+
+                    // Log Time to Task
+                    if (selectedTaskId) {
+                        let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
+                        if (taskToUpdate) {
+                            taskToUpdate.timeSpent += timeLimit; // Add total session seconds
+                            saveTasksToCloud(); // Save immediately, onSnapshot will update UI
+                            alert(`Focus complete! Added ${Math.round(timeLimit / 60)} minutes to "${taskToUpdate.name}".`);
+                        }
+                    } else {
+                        alert("Focus session complete!");
+                    }
+                    resetTimer();
                 }
             }, 1000);
         }
@@ -589,6 +564,14 @@
             let y = dateObj.getFullYear(); let m = (dateObj.getMonth() + 1).toString().padStart(2, '0'); let d = dateObj.getDate().toString().padStart(2, '0');
             return `${y}-${m}-${d}`;
         }
+        
+        function formatTimeSpent(totalSeconds) {
+            if (!totalSeconds) return "0m";
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            if (h > 0) return `${h}h ${m}m`;
+            return `${m}m`;
+        }
 
         function renderTracker() {
             const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
@@ -596,7 +579,9 @@
             
             thead.innerHTML = '<th>Habit / Task Name</th>';
             for (let i = 1; i <= daysInMonth; i++) { thead.innerHTML += `<th>${i}</th>`; }
-            thead.innerHTML += `<th class="progress-cell">Progress</th><th>Del</th>`;
+            
+            // Added Time Column
+            thead.innerHTML += `<th class="progress-cell">Progress</th><th>Time Logged</th><th>Del</th>`;
 
             tbody.innerHTML = "";
             tasks.forEach(task => {
@@ -619,6 +604,12 @@
                 tdProg.innerHTML = `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width: ${progressPercent}%"></div></div>`;
                 tr.appendChild(tdProg);
 
+                // Add Time Display Cell
+                let tdTime = document.createElement("td");
+                tdTime.className = "time-cell";
+                tdTime.innerText = formatTimeSpent(task.timeSpent);
+                tr.appendChild(tdTime);
+
                 let tdAction = document.createElement("td");
                 tdAction.innerHTML = `<button class="delete-task-btn" onclick="openModal(${task.id})">×</button>`;
                 tr.appendChild(tdAction); tbody.appendChild(tr);
@@ -628,17 +619,15 @@
         function toggleTaskCompletion(taskId, dateString, isChecked) {
             let task = tasks.find(t => t.id === taskId);
             if(isChecked) { task.completed.add(dateString); } else { task.completed.delete(dateString); }
-            saveTasksToCloud(); 
-            renderTracker(); renderHeatmap(); 
+            saveTasksToCloud(); // Triggers snapshot instantly
         }
 
         function addTask() {
             const input = document.getElementById("new-task-input"); const val = input.value.trim();
             if(val !== "") { 
-                tasks.push({ id: Date.now(), name: val, completed: new Set() }); 
+                tasks.push({ id: Date.now(), name: val, completed: new Set(), timeSpent: 0 }); 
                 input.value = ""; 
-                saveTasksToCloud(); 
-                renderTracker(); 
+                saveTasksToCloud(); // Triggers snapshot instantly
             }
         }
 
@@ -649,11 +638,11 @@
             if (taskToDeleteId !== null) { 
                 tasks = tasks.filter(t => t.id !== taskToDeleteId); 
                 saveTasksToCloud(); 
-                renderTracker(); renderHeatmap(); closeModal(); 
+                closeModal(); 
             }
         }
 
-        // --- EXPORT FUNCTIONS TO GLOBAL WINDOW OBJECT ---
+        // EXPORT FUNCTIONS TO WINDOW
         window.loginWithGoogle = loginWithGoogle;
         window.logout = logout;
         window.toggleTheme = toggleTheme;
