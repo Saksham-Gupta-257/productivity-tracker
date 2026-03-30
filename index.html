@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleek Productivity Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255,255,255,0.06);
+            --glass-border: rgba(255,255,255,0.12);
+            --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --glass-blur: blur(18px);
+            --text-primary: rgba(255,255,255,0.92);
+            --text-secondary: rgba(255,255,255,0.5);
+            --accent: #4ade9a;
+            --accent-dim: rgba(74,222,154,0.15);
+            --accent-glow: rgba(74,222,154,0.35);
+            --danger: #ff5f6d;
+            --danger-dim: rgba(255,95,109,0.15);
+            --input-bg: rgba(255,255,255,0.07);
+            --input-border: rgba(255,255,255,0.14);
+            --scrollbar-thumb: rgba(255,255,255,0.18);
+            --scrollbar-track: rgba(255,255,255,0.04);
+            --modal-overlay: rgba(0,0,0,0.7);
+            --bg-overlay: linear-gradient(135deg, rgba(5,5,20,0.72) 0%, rgba(10,15,35,0.55) 100%);
+            --body-bg: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80') center/cover fixed no-repeat;
+            --heat-0: rgba(255,255,255,0.05);
+            --heat-1: rgba(74,222,154,0.25);
+            --heat-2: rgba(74,222,154,0.5);
+            --heat-3: rgba(74,222,154,0.75);
+            --heat-4: rgba(74,222,154,1);
+            --progress-bg: rgba(255,255,255,0.08);
+            --progress-fill: linear-gradient(90deg, #4ade9a, #22d3ee);
+            --timer-track: rgba(255,255,255,0.08);
+            --timer-stroke: #4ade9a;
+        }
+        [data-theme="light"] {
+            --glass-bg: rgba(255,255,255,0.45);
+            --glass-border: rgba(255,255,255,0.7);
+            --glass-shadow: 0 8px 32px rgba(80,100,180,0.15);
+            --text-primary: rgba(20,25,50,0.92);
+            --text-secondary: rgba(20,25,50,0.5);
+            --accent: #059669;
+            --accent-dim: rgba(5,150,105,0.12);
+            --accent-glow: rgba(5,150,105,0.3);
+            --danger: #dc2626;
+            --danger-dim: rgba(220,38,38,0.12);
+            --input-bg: rgba(255,255,255,0.55);
+            --input-border: rgba(20,25,50,0.15);
+            --scrollbar-thumb: rgba(20,25,50,0.2);
+            --scrollbar-track: rgba(20,25,50,0.04);
+            --modal-overlay: rgba(0,0,0,0.4);
+            --bg-overlay: none;
+            --body-bg: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 35%, #ede9fe 70%, #fce7f3 100%);
+            --heat-0: rgba(20,25,50,0.06);
+            --heat-1: rgba(5,150,105,0.25);
+            --heat-2: rgba(5,150,105,0.5);
+            --heat-3: rgba(5,150,105,0.75);
+            --heat-4: rgba(5,150,105,1);
+            --progress-bg: rgba(20,25,50,0.08);
+            --progress-fill: linear-gradient(90deg, #059669, #0891b2);
+            --timer-track: rgba(20,25,50,0.1);
+            --timer-stroke: #059669;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 15px; }
+
+        body {
+            font-family: 'DM Mono', monospace; min-height: 100vh; background: var(--body-bg);
+            color: var(--text-primary); transition: background 0.5s, color 0.3s; padding: 20px;
+        }
+        [data-theme="dark"] body::before { content: ''; position: fixed; inset: 0; background: var(--bg-overlay); z-index: 0; pointer-events: none; }
+        [data-theme="light"] body { background: var(--body-bg); }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+
+        /* UI Utilities */
+        .hidden { display: none !important; }
+
+        /* Login Screen */
+        .login-container {
+            position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 50;
+        }
+        .login-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-shadow); padding: 50px 40px; text-align: center; max-width: 400px; width: 90%;
+            animation: modalIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .login-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 10px; }
+        .login-subtitle { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 40px; }
+        .btn-google {
+            background: #fff; color: #333; border: none; border-radius: 10px; padding: 12px 24px;
+            font-family: 'DM Mono', monospace; font-size: 1rem; cursor: pointer; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+        .btn-google img { width: 24px; height: 24px; }
+
+        .app {
+            position: relative; z-index: 1; width: 100%; max-width: 1700px;
+            margin: 0 auto; display: flex; flex-direction: column; gap: 24px; min-width: 320px;
+        }
+
+        .top-bar {
+            display: flex; align-items: center; justify-content: space-between; padding: 14px 24px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px;
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-shadow); width: 100%; 
+        }
+        .brand { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; letter-spacing: 0.04em; color: var(--accent); }
+        .brand span { color: var(--text-primary); font-weight: 400; }
+        
+        .user-controls { display: flex; align-items: center; gap: 16px; }
+        .user-email { font-size: 0.8rem; color: var(--text-secondary); display: none; }
+
+        .theme-btn {
+            background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent);
+            border-radius: 10px; padding: 8px 16px; font-family: 'DM Mono', monospace; font-size: 0.8rem;
+            cursor: pointer; transition: all 0.25s; letter-spacing: 0.05em; font-weight: bold;
+        }
+        .theme-btn:hover { background: var(--accent-glow); transform: translateY(-1px); }
+
+        .top-row { display: flex; gap: 24px; width: 100%; align-items: stretch; }
+        
+        .panel {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-shadow); overflow: hidden;
+            transition: background 0.3s, border-color 0.3s; display: flex; flex-direction: column;
+        }
+        
+        #timerPanel { flex: 0 0 calc(25% - 12px); max-width: calc(25% - 12px); padding: 28px; justify-content: space-between; }
+        #heatmapPanel { flex: 0 0 calc(75% - 12px); max-width: calc(75% - 12px); padding: 28px; justify-content: space-between; }
+
+        .panel-title {
+            font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em;
+            text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+        }
+        .panel-title::after { content: ''; flex: 1; height: 1px; background: var(--glass-border); }
+
+        select, input[type="text"] {
+            background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);
+            border-radius: 10px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 0.85rem;
+            outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none;
+        }
+        select:focus, input[type="text"]:focus { border-color: var(--accent-glow); background: var(--accent-dim); }
+        select option { background: #1a1f3a; color: #fff; }
+
+        .btn {
+            background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent);
+            border-radius: 10px; padding: 10px 18px; font-family: 'DM Mono', monospace; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.04em; font-weight: bold;
+        }
+        .btn:hover { background: var(--accent-glow); transform: translateY(-2px); box-shadow: 0 6px 16px var(--accent-glow); }
+        .btn:active { transform: translateY(0); }
+        .btn.danger { background: var(--danger-dim); border-color: rgba(255,95,109,0.3); color: var(--danger); }
+        .btn.danger:hover { background: rgba(255,95,109,0.25); box-shadow: 0 6px 16px rgba(255,95,109,0.2); }
+        .btn.neutral { background: var(--input-bg); border-color: var(--input-border); color: var(--text-secondary); }
+        .btn.neutral:hover { background: var(--glass-border); color: var(--text-primary); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+
+        /* Timer */
+        .timer-content-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; align-items: center; width: 100%; }
+        .timer-date { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 16px; letter-spacing: 0.05em; text-align: center; width: 100%;}
+        .timer-select-row { margin-bottom: 20px; width: 100%; text-align: center; }
+        .timer-select-row select { width: 85%; }
+        .timer-circle-wrap { display: flex; justify-content: center; align-items: center; margin: 10px 0 25px; }
+        .timer-svg-container { position: relative; width: 180px; height: 180px; }
+        .timer-svg { width: 180px; height: 180px; transform: rotate(-90deg); }
+        .timer-track { fill: none; stroke: var(--timer-track); stroke-width: 8; }
+        .timer-progress {
+            fill: none; stroke: var(--timer-stroke); stroke-width: 8; stroke-linecap: round;
+            transition: stroke-dashoffset 0.9s linear; filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+        .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .timer-digits { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.04em; }
+        .timer-label { font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.1em; margin-top: 4px; font-weight: bold;}
+        .timer-controls { display: flex; gap: 12px; justify-content: center; width: 100%; }
+
+        /* Heatmap */
+        .heatmap-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .heatmap-top select { min-width: 120px; }
+        .heatmap-scroll { overflow-x: auto; padding-bottom: 10px; margin: auto 0; width: 100%;}
+        .heatmap-months { display: flex; gap: 20px; width: max-content; }
+        .month-label { font-size: 0.8rem; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 10px; font-family: 'Syne', sans-serif; font-weight: 700; text-transform: uppercase; }
+        .month-grid { display: grid; grid-template-columns: repeat(6, 18px); grid-template-rows: repeat(7, 18px); gap: 4px; }
+        .heat-cell {
+            width: 18px; height: 18px; border-radius: 4px; background: var(--heat-0);
+            transition: background 0.3s, transform 0.15s; cursor: default; position: relative;
+        }
+        .heat-cell:not(.empty):hover { transform: scale(1.2); z-index: 10; border: 1px solid var(--text-primary);}
+        .heat-cell.l1 { background: var(--heat-1); }
+        .heat-cell.l2 { background: var(--heat-2); }
+        .heat-cell.l3 { background: var(--heat-3); }
+        .heat-cell.l4 { background: var(--heat-4); }
+        .heat-cell.empty { background: transparent; cursor: default; }
+        .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 0.8rem; color: var(--text-secondary); justify-content: flex-end;}
+        .legend-cell { width: 14px; height: 14px; border-radius: 3px; }
+
+        /* Tracker */
+        .tracker-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+        #trackerPanel { width: 100%; padding: 28px; display: block; } 
+        .task-input { flex: 1; min-width: 200px; }
+        .tracker-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .table-scroll { overflow-x: auto; overflow-y: auto; max-height: 450px; }
+        table { border-collapse: collapse; width: max-content; min-width: 100%; }
+        th, td { padding: 12px 14px; font-size: 0.85rem; text-align: center; white-space: nowrap; border-bottom: 1px solid var(--glass-border); }
+        th { font-family: 'Syne', sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--accent); position: sticky; top: 0; background: rgba(10,15,35,0.85); backdrop-filter: blur(12px); z-index: 5; }
+        [data-theme="light"] th { background: rgba(235,240,255,0.9); }
+        td:first-child, th:first-child { position: sticky; left: 0; background: rgba(10,15,35,0.9); backdrop-filter: blur(12px); z-index: 4; text-align: left; min-width: 180px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem; color: var(--text-primary); }
+        [data-theme="light"] td:first-child, [data-theme="light"] th:first-child { background: rgba(240,245,255,0.95); }
+        th:first-child { z-index: 6; }
+        tr:hover td { background: rgba(255,255,255,0.04); }
+        [data-theme="light"] tr:hover td { background: rgba(0,0,0,0.03); }
+
+        input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--input-border); border-radius: 5px; background: var(--input-bg); cursor: pointer; position: relative; transition: all 0.15s; }
+        input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+        input[type="checkbox"]:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 5px; height: 10px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); }
+        input[type="checkbox"]:hover { border-color: var(--accent); }
+
+        .progress-cell { min-width: 120px; }
+        .progress-bar-wrap { background: var(--progress-bg); border-radius: 12px; height: 12px; overflow: hidden; width: 100px; margin: 0 auto; border: 1px solid var(--glass-border);}
+        .progress-bar-fill { height: 100%; background: var(--progress-fill); border-radius: 12px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .delete-task-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.4rem; padding: 4px 8px; border-radius: 6px; transition: color 0.2s, background 0.2s; line-height: 1; }
+        .delete-task-btn:hover { color: var(--danger); background: var(--danger-dim); }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: var(--modal-overlay); z-index: 1000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 20px; padding: 40px 50px; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center; animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes modalIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-icon { font-size: 2.5rem; margin-bottom: 16px; }
+        .modal-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; color: var(--text-primary); }
+        .modal-msg { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 30px; line-height: 1.6; }
+        .modal-msg strong { color: var(--text-primary); }
+        .modal-actions { display: flex; gap: 16px; justify-content: center; }
+        .modal-actions .btn { padding: 12px 28px; }
+
+        .heat-cell[data-tip] { position: relative; }
+        .heat-cell[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: rgba(10,15,35,0.95); color: #fff; font-size: 0.75rem; padding: 8px 12px; border-radius: 8px; white-space: nowrap; pointer-events: none; z-index: 100; border: 1px solid var(--glass-border); }
+        [data-theme="light"] .heat-cell[data-tip]:hover::after { background: rgba(20,25,50,0.95); }
+
+        @media (max-width: 1024px) { .top-row { flex-direction: column; } #timerPanel, #heatmapPanel { flex: 1 1 auto; max-width: 100%; } body { padding: 16px; } .panel { padding: 20px; } .user-email { display: none !important; } }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="login-container">
+        <div class="login-card">
+            <h1 class="login-title">Tracker</h1>
+            <p class="login-subtitle">Sync your productivity across all your devices.</p>
+            <button class="btn-google" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <div id="main-app" class="app hidden">
+        <div class="top-bar">
+            <div class="brand">Track<span>er</span></div>
+            <div class="user-controls">
+                <span class="user-email" id="user-email" style="display: block;"></span>
+                <button class="btn neutral" onclick="logout()" style="padding: 6px 12px; font-size: 0.75rem;">SIGN OUT</button>
+                <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">LIGHT MODE</button>
+            </div>
+        </div>
+
+        <div class="top-row">
+            <div class="panel" id="timerPanel">
+                <h2 class="panel-title">Focus Timer</h2>
+                <div class="timer-content-wrapper">
+                    <div class="timer-date" id="current-date">Loading...</div>
+                    <div class="timer-select-row">
+                        <select id="timer-duration" onchange="setTimerDuration()">
+                            <option value="1800">30 Minutes</option>
+                            <option value="3600">1 Hour</option>
+                            <option value="7200">2 Hours</option>
+                        </select>
+                    </div>
+                    <div class="timer-circle-wrap">
+                        <div class="timer-svg-container">
+                            <svg class="timer-svg" viewBox="0 0 100 100">
+                                <circle class="timer-track" cx="50" cy="50" r="45"></circle>
+                                <circle class="timer-progress" id="timer-progress" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="0"></circle>
+                            </svg>
+                            <div class="timer-text">
+                                <div class="timer-digits" id="timer-digits">30:00</div>
+                                <div class="timer-label">FOCUS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timer-controls">
+                    <button class="btn" onclick="startTimer()">Start</button>
+                    <button class="btn neutral" onclick="pauseTimer()">Pause</button>
+                    <button class="btn danger" onclick="resetTimer()">Reset</button>
+                </div>
+            </div>
+
+            <div class="panel" id="heatmapPanel">
+                <h2 class="panel-title">Activity</h2>
+                <div class="heatmap-top">
+                    <select id="year-select" onchange="changeYear()"></select>
+                </div>
+                <div class="heatmap-scroll">
+                    <div class="heatmap-months" id="heatmap"></div>
+                </div>
+                <div class="heatmap-legend">
+                    Less 
+                    <div class="legend-cell" style="background:var(--heat-1)"></div>
+                    <div class="legend-cell" style="background:var(--heat-2)"></div>
+                    <div class="legend-cell" style="background:var(--heat-3)"></div>
+                    <div class="legend-cell" style="background:var(--heat-4)"></div>
+                    More
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="trackerPanel">
+            <h2 class="panel-title">Tasks</h2>
+            <div class="tracker-top">
+                <select id="month-select" onchange="changeMonth()">
+                    <option value="0">January</option><option value="1">February</option>
+                    <option value="2">March</option><option value="3">April</option>
+                    <option value="4">May</option><option value="5">June</option>
+                    <option value="6">July</option><option value="7">August</option>
+                    <option value="8">September</option><option value="9">October</option>
+                    <option value="10">November</option><option value="11">December</option>
+                </select>
+                <input type="text" id="new-task-input" class="task-input" placeholder="Add a new task...">
+                <div class="tracker-controls">
+                    <button class="btn" onclick="addTask()">Add Task</button>
+                </div>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead><tr id="table-header"></tr></thead>
+                    <tbody id="task-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal-box">
+            <div class="modal-icon">🗑️</div>
+            <div class="modal-title">Delete Task?</div>
+            <div class="modal-msg">Are you sure you want to remove this task? Your history will be permanently lost.</div>
+            <div class="modal-actions">
+                <button class="btn neutral" onclick="closeModal()">Cancel</button>
+                <button class="btn danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        // Import Authentication Modules
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+        // 🚨 REPLACE THIS OBJECT WITH YOUR FIREBASE CONFIG 🚨
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjrbnYJB4OSLZRAJ3NRXVMgM6Y_VCsJ-Y",
+            authDomain: "productivity-tracker-a662f.firebaseapp.com",
+            projectId: "productivity-tracker-a662f",
+            storageBucket: "productivity-tracker-a662f.firebasestorage.app",
+            messagingSenderId: "630067819128",
+            appId: "1:630067819128:web:b70df7bbf3f4b16696338d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Initialize Firebase Auth
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        let tasksDocRef = null;
+        let tasks = [];
+        const today = new Date();
+        let selectedYear = today.getFullYear();
+        let selectedMonth = today.getMonth();
+        let taskToDeleteId = null; 
+
+        // --- AUTHENTICATION LISTENER ---
+        // This runs automatically to check if you are logged in
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is signed in.
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('user-email').innerText = user.email;
+                
+                // Set the database reference to THIS user's unique ID
+                tasksDocRef = doc(db, "users", user.uid);
+                
+                document.getElementById("task-list").innerHTML = "<tr><td colspan='3'>Syncing your data...</td></tr>";
+                await loadTasksFromCloud();
+            } else {
+                // User is signed out.
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('hidden');
+                tasksDocRef = null;
+                tasks = [];
+            }
+        });
+
+        // Login & Logout Functions
+        async function loginWithGoogle() {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Login Error:", error);
+                alert("Login Failed: " + error.message);
+            }
+        }
+
+        async function logout() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Logout Error:", error);
+            }
+        }
+        
+        // --- DATABASE SYNC FUNCTIONS ---
+        async function loadTasksFromCloud() {
+            if (!tasksDocRef) return;
+            try {
+                const docSnap = await getDoc(tasksDocRef);
+                if (docSnap.exists() && docSnap.data().tasks) {
+                    const savedData = docSnap.data().tasks;
+                    tasks = savedData.map(t => ({ id: t.id, name: t.name, completed: new Set(t.completed) }));
+                } else {
+                    // Create default tasks if new user
+                    tasks = [
+                        { id: 1, name: "Morning Exercise", completed: new Set() },
+                        { id: 2, name: "Read 10 Pages", completed: new Set() }
+                    ];
+                    await saveTasksToCloud();
+                }
+            } catch (error) {
+                console.error("Error loading data:", error);
+            }
+            renderTracker();
+            renderHeatmap();
+        }
+
+        async function saveTasksToCloud() {
+            if (!tasksDocRef) return;
+            try {
+                const dataToSave = tasks.map(t => ({ id: t.id, name: t.name, completed: Array.from(t.completed) }));
+                await setDoc(tasksDocRef, { tasks: dataToSave }, { merge: true });
+            } catch (error) {
+                console.error("Error saving data:", error);
+            }
+        }
+
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            const htmlNode = document.documentElement;
+            const current = htmlNode.getAttribute("data-theme") === 'light' ? 'dark' : 'light';
+            htmlNode.setAttribute("data-theme", current);
+            localStorage.setItem("glassTrackerTheme", current);
+            document.getElementById("theme-btn").innerText = current === 'light' ? "DARK MODE" : "LIGHT MODE";
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem("glassTrackerTheme") || 'dark';
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            document.getElementById("theme-btn").innerText = savedTheme === 'light' ? "DARK MODE" : "LIGHT MODE";
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            loadTheme();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById("current-date").innerText = today.toLocaleDateString('en-US', options);
+            
+            populateYearDropdown();
+            document.getElementById("month-select").value = selectedMonth;
+            setTimerDuration();
+        };
+
+        // --- TIMER LOGIC ---
+        let timeLimit = 1800; 
+        let timeLeft = timeLimit; 
+        let timerInterval = null;
+
+        function setTimerDuration() {
+            pauseTimer();
+            timeLimit = parseInt(document.getElementById("timer-duration").value);
+            timeLeft = timeLimit;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            let mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            let secs = (timeLeft % 60).toString().padStart(2, '0');
+            let hours = Math.floor(timeLeft / 3600);
+            
+            if (hours > 0) {
+                mins = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+                document.getElementById("timer-digits").innerText = `${hours}:${mins}:${secs}`;
+            } else {
+                document.getElementById("timer-digits").innerText = `${mins}:${secs}`;
+            }
+
+            const offset = (1 - (timeLeft / timeLimit)) * 283;
+            document.getElementById("timer-progress").style.strokeDashoffset = offset;
+        }
+
+        function startTimer() {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--; updateTimerDisplay();
+                } else {
+                    clearInterval(timerInterval); timerInterval = null; alert("Focus session complete!");
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
+        function resetTimer() { setTimerDuration(); }
+
+        // --- UI RENDERING LOGIC ---
+        function populateYearDropdown() {
+            const select = document.getElementById("year-select");
+            for(let y = today.getFullYear() - 2; y <= today.getFullYear() + 2; y++) {
+                let opt = document.createElement("option"); opt.value = y; opt.innerText = y;
+                if(y === selectedYear) opt.selected = true; select.appendChild(opt);
+            }
+        }
+
+        function changeYear() { selectedYear = parseInt(document.getElementById("year-select").value); renderHeatmap(); renderTracker(); }
+
+        function renderHeatmap() {
+            const container = document.getElementById("heatmap"); 
+            container.innerHTML = "";
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            for (let m = 0; m < 12; m++) {
+                const monthWrapper = document.createElement("div"); monthWrapper.className = "month-block";
+                const label = document.createElement("div"); label.className = "month-label"; label.innerText = monthNames[m];
+                monthWrapper.appendChild(label);
+                
+                const grid = document.createElement("div"); grid.className = "month-grid";
+                const daysInMonth = getDaysInMonth(selectedYear, m);
+                const firstDay = new Date(selectedYear, m, 1).getDay();
+
+                for (let i = 0; i < firstDay; i++) {
+                    let emptyCell = document.createElement("div"); emptyCell.className = "heat-cell empty"; grid.appendChild(emptyCell);
+                }
+
+                for (let d = 1; d <= daysInMonth; d++) {
+                    let dateString = formatDate(new Date(selectedYear, m, d));
+                    let completions = tasks.filter(t => t.completed.has(dateString)).length;
+                    
+                    let cell = document.createElement("div"); cell.className = "heat-cell";
+                    cell.setAttribute('data-tip', `${dateString}: ${completions} task(s)`);
+                    
+                    if (completions > 0) {
+                        if (completions === 1) cell.classList.add("l1");
+                        else if (completions === 2) cell.classList.add("l2");
+                        else if (completions === 3) cell.classList.add("l3");
+                        else cell.classList.add("l4");
+                    }
+                    grid.appendChild(cell);
+                }
+                monthWrapper.appendChild(grid); container.appendChild(monthWrapper);
+            }
+        }
+
+        function changeMonth() { selectedMonth = parseInt(document.getElementById("month-select").value); renderTracker(); }
+        function getDaysInMonth(year, month) { return new Date(year, month + 1, 0).getDate(); }
+        function formatDate(dateObj) {
+            let y = dateObj.getFullYear(); let m = (dateObj.getMonth() + 1).toString().padStart(2, '0'); let d = dateObj.getDate().toString().padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function renderTracker() {
+            const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
+            const thead = document.getElementById("table-header"); const tbody = document.getElementById("task-list");
+            
+            thead.innerHTML = '<th>Habit / Task Name</th>';
+            for (let i = 1; i <= daysInMonth; i++) { thead.innerHTML += `<th>${i}</th>`; }
+            thead.innerHTML += `<th class="progress-cell">Progress</th><th>Del</th>`;
+
+            tbody.innerHTML = "";
+            tasks.forEach(task => {
+                let tr = document.createElement("tr");
+                let tdName = document.createElement("td"); tdName.innerText = task.name; tdName.title = task.name; tr.appendChild(tdName);
+                
+                let monthlyCompletedCount = 0;
+                for (let i = 1; i <= daysInMonth; i++) {
+                    let td = document.createElement("td"); let cb = document.createElement("input"); cb.type = "checkbox";
+                    let dateString = formatDate(new Date(selectedYear, selectedMonth, i));
+                    
+                    if (task.completed.has(dateString)) { cb.checked = true; monthlyCompletedCount++; }
+                    
+                    cb.onchange = () => toggleTaskCompletion(task.id, dateString, cb.checked);
+                    td.appendChild(cb); tr.appendChild(td);
+                }
+
+                let progressPercent = (monthlyCompletedCount / daysInMonth) * 100;
+                let tdProg = document.createElement("td"); tdProg.className = "progress-cell";
+                tdProg.innerHTML = `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width: ${progressPercent}%"></div></div>`;
+                tr.appendChild(tdProg);
+
+                let tdAction = document.createElement("td");
+                tdAction.innerHTML = `<button class="delete-task-btn" onclick="openModal(${task.id})">×</button>`;
+                tr.appendChild(tdAction); tbody.appendChild(tr);
+            });
+        }
+
+        function toggleTaskCompletion(taskId, dateString, isChecked) {
+            let task = tasks.find(t => t.id === taskId);
+            if(isChecked) { task.completed.add(dateString); } else { task.completed.delete(dateString); }
+            saveTasksToCloud(); 
+            renderTracker(); renderHeatmap(); 
+        }
+
+        function addTask() {
+            const input = document.getElementById("new-task-input"); const val = input.value.trim();
+            if(val !== "") { 
+                tasks.push({ id: Date.now(), name: val, completed: new Set() }); 
+                input.value = ""; 
+                saveTasksToCloud(); 
+                renderTracker(); 
+            }
+        }
+
+        const modal = document.getElementById("delete-modal");
+        function openModal(taskId) { taskToDeleteId = taskId; modal.classList.add("active"); }
+        function closeModal() { taskToDeleteId = null; modal.classList.remove("active"); }
+        function confirmDelete() {
+            if (taskToDeleteId !== null) { 
+                tasks = tasks.filter(t => t.id !== taskToDeleteId); 
+                saveTasksToCloud(); 
+                renderTracker(); renderHeatmap(); closeModal(); 
+            }
+        }
+
+        // --- EXPORT FUNCTIONS TO GLOBAL WINDOW OBJECT ---
+        window.loginWithGoogle = loginWithGoogle;
+        window.logout = logout;
+        window.toggleTheme = toggleTheme;
+        window.setTimerDuration = setTimerDuration;
+        window.startTimer = startTimer;
+        window.pauseTimer = pauseTimer;
+        window.resetTimer = resetTimer;
+        window.changeYear = changeYear;
+        window.changeMonth = changeMonth;
+        window.addTask = addTask;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.confirmDelete = confirmDelete;
+    </script>
+</body>
+</html>
