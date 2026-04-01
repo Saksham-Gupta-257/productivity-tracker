@@ -100,11 +100,11 @@
 
         /* 3-Panel Top Row Layout */
         .top-row { display: flex; gap: 24px; width: 100%; align-items: stretch; }
-        .panel { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); overflow: hidden; transition: background 0.3s, border-color 0.3s; display: flex; flex-direction: column; }
+        .panel { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); overflow: hidden; transition: background 0.3s, border-color 0.3s; display: flex; flex-direction: column; padding: 20px; }
         
-        #timerPanel { flex: 0 0 320px; padding: 28px; justify-content: space-between; }
-        #heatmapPanel { flex: 1; min-width: 0; padding: 28px; justify-content: space-between; }
-        #analyticsPanel { flex: 0 0 300px; padding: 28px; justify-content: space-between; }
+        #timerPanel { flex: 0 0 320px; padding: 22px; justify-content: space-between; }
+        #heatmapPanel { flex: 1; min-width: 0; padding: 22px; justify-content: space-between; }
+        #analyticsPanel { flex: 0 0 300px; padding: 22px; justify-content: space-between; }
 
         .panel-title { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .panel-title::after { content: ''; flex: 1; height: 1px; background: var(--glass-border); }
@@ -121,7 +121,7 @@
         .btn.neutral { background: var(--input-bg); border-color: var(--input-border); color: var(--text-secondary); }
         .btn.neutral:hover { background: var(--glass-border); color: var(--text-primary); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
 
-        /* NEW: Sleek Digital Timer Styles */
+        /* Sleek Digital Timer Styles */
         .timer-content-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; align-items: center; width: 100%; }
         .timer-date { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em; text-align: center; width: 100%;}
         .timer-select-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px; width: 100%; align-items: center; }
@@ -154,18 +154,37 @@
         .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 0.8rem; color: var(--text-secondary); justify-content: flex-end;}
         .legend-cell { width: 14px; height: 14px; border-radius: 3px; }
 
-        /* Analytics Donut Chart Styles */
-        .analytics-content { display: flex; flex-direction: column; flex: 1; }
-        .donut-container { position: relative; width: 160px; height: 160px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; }
-        .donut-chart { position: absolute; inset: 0; border-radius: 50%; background: var(--glass-bg); transition: background 0.5s; mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #fff calc(100% - 14px)); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #fff calc(100% - 14px)); }
-        .donut-center { text-align: center; z-index: 2; display: flex; flex-direction: column; }
+        /* Analytics Donut Chart & SVG Styles */
+        .analytics-content { display: flex; flex-direction: column; flex: 1; justify-content: center; }
+        .donut-container { position: relative; width: 140px; height: 140px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+        svg.donut-chart-svg { width: 100%; height: 100%; transform: rotate(-90deg); border-radius: 50%; }
+        .donut-segment { transition: stroke-width 0.2s ease, opacity 0.2s; cursor: pointer; transform-origin: center; }
+        .donut-segment:hover { stroke-width: 8; opacity: 0.8; }
+        .donut-center { position: absolute; text-align: center; z-index: 2; display: flex; flex-direction: column; pointer-events: none; }
         .donut-total { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.04em;}
         .donut-label { font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 0.1em; font-weight: bold;}
-        .donut-legend { display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 5px; margin-top: auto;}
-        .legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; background: var(--glass-bg); padding: 8px 12px; border-radius: 8px;}
-        .legend-dot-name { display: flex; align-items: center; gap: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px rgba(0,0,0,0.3);}
-        .legend-time { color: var(--text-secondary); font-family: 'DM Mono', monospace; font-weight: bold; }
+        
+        /* Tooltip Styles */
+        .custom-tooltip {
+            position: absolute;
+            background: rgba(10,15,35,0.95);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 1px solid var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            white-space: nowrap;
+            transform: translate(-50%, -100%);
+            margin-top: -15px;
+            font-family: 'DM Mono', monospace;
+        }
+        [data-theme="light"] .custom-tooltip { background: rgba(255,255,255,0.95); color: var(--text-primary); }
 
         /* Tracker Styles */
         .tracker-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -296,17 +315,23 @@
             </div>
 
             <div class="panel" id="analyticsPanel">
-                <h2 class="panel-title">Distribution</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h2 class="panel-title" style="margin-bottom: 0;">Distribution</h2>
+                    <select id="dist-filter" style="padding: 4px 8px; font-size: 0.75rem; min-width: 100px;" onchange="renderDonutChart()">
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="week">Last 7 Days</option>
+                        <option value="month">Last 30 Days</option>
+                        <option value="all" selected>All Time</option>
+                    </select>
+                </div>
                 <div class="analytics-content">
-                    <div class="donut-container">
-                        <div class="donut-chart" id="donut-chart"></div>
+                    <div class="donut-container" id="donut-container">
                         <div class="donut-center">
                             <span class="donut-total" id="donut-total-time">0m</span>
                             <span class="donut-label">TOTAL TIME</span>
                         </div>
                     </div>
-                    <div class="donut-legend" id="donut-legend">
-                        </div>
                 </div>
             </div>
         </div>
@@ -359,6 +384,8 @@
         </div>
     </div>
 
+    <div id="donut-tooltip" class="custom-tooltip"></div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
@@ -383,6 +410,7 @@
         let unsubscribeSnapshot = null; 
         let tasks = [];
         let generalTimeSpent = 0; 
+        let generalTimeLog = {}; 
         
         const today = new Date();
         let selectedYear = today.getFullYear();
@@ -406,20 +434,22 @@
                     if (docSnap.exists() && docSnap.data().tasks) {
                         const savedData = docSnap.data().tasks;
                         generalTimeSpent = docSnap.data().generalTimeSpent || 0;
+                        generalTimeLog = docSnap.data().generalTimeLog || {};
                         
                         tasks = savedData.map(t => ({ 
                             id: t.id, 
                             name: t.name, 
                             completed: new Set(t.completed),
-                            timeSpent: t.timeSpent || 0 
+                            timeSpent: t.timeSpent || 0,
+                            timeLog: t.timeLog || {} 
                         }));
                     } else {
-                        // Default onboarding data
                         tasks = [
-                            { id: 1, name: "Morning Exercise", completed: new Set(), timeSpent: 0 },
-                            { id: 2, name: "Read 10 Pages", completed: new Set(), timeSpent: 0 }
+                            { id: 1, name: "Morning Exercise", completed: new Set(), timeSpent: 0, timeLog: {} },
+                            { id: 2, name: "Read 10 Pages", completed: new Set(), timeSpent: 0, timeLog: {} }
                         ];
                         generalTimeSpent = 0;
+                        generalTimeLog = {};
                         saveTasksToCloud(); 
                     }
                     
@@ -452,8 +482,18 @@
         async function saveTasksToCloud() {
             if (!tasksDocRef) return;
             try {
-                const dataToSave = tasks.map(t => ({ id: t.id, name: t.name, completed: Array.from(t.completed), timeSpent: t.timeSpent }));
-                await setDoc(tasksDocRef, { tasks: dataToSave, generalTimeSpent: generalTimeSpent }, { merge: true });
+                const dataToSave = tasks.map(t => ({ 
+                    id: t.id, 
+                    name: t.name, 
+                    completed: Array.from(t.completed), 
+                    timeSpent: t.timeSpent,
+                    timeLog: t.timeLog || {}
+                }));
+                await setDoc(tasksDocRef, { 
+                    tasks: dataToSave, 
+                    generalTimeSpent: generalTimeSpent,
+                    generalTimeLog: generalTimeLog 
+                }, { merge: true });
             } catch (error) {
                 console.error("Error saving data:", error);
             }
@@ -482,58 +522,108 @@
             setTimerDuration();
         };
 
-        // --- DONUT CHART RENDER LOGIC ---
+        // --- DONUT CHART (SVG AND FILTER LOGIC) ---
         function renderDonutChart() {
-            const donutChart = document.getElementById('donut-chart');
-            const legendContainer = document.getElementById('donut-legend');
+            const container = document.getElementById('donut-container');
             const totalDisplay = document.getElementById('donut-total-time');
+            const filter = document.getElementById('dist-filter').value;
+            
+            const now = new Date();
+            let startDate = new Date(0); 
+            let endDate = new Date('2099-12-31');
 
-            let totalSeconds = generalTimeSpent;
-            tasks.forEach(t => totalSeconds += t.timeSpent);
-
-            totalDisplay.innerText = formatTimeSpent(totalSeconds);
-            legendContainer.innerHTML = "";
-
-            if (totalSeconds === 0) {
-                donutChart.style.background = 'var(--glass-bg)';
-                return;
+            if (filter === 'today') {
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            } else if (filter === 'yesterday') {
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59);
+            } else if (filter === 'week') {
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+            } else if (filter === 'month') {
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
             }
 
-            let gradientString = [];
-            let currentPercentage = 0;
+            let totalFilteredSeconds = 0;
+            let chartData = [];
             let colorIndex = 0;
 
-            let chartData = [];
-            if (generalTimeSpent > 0) {
-                chartData.push({ name: "General Focus", time: generalTimeSpent, color: '#94a3b8' }); 
+            const getTimeInRange = (timeLogObj) => {
+                if (!timeLogObj) return 0;
+                let sum = 0;
+                for (let dateStr in timeLogObj) {
+                    let logDate = new Date(dateStr);
+                    if (logDate >= startDate && logDate <= endDate) sum += timeLogObj[dateStr];
+                }
+                return sum;
+            };
+
+            tasks.forEach(t => {
+                let time = t.timeLog ? getTimeInRange(t.timeLog) : (filter === 'all' ? t.timeSpent : 0);
+                if (time > 0) {
+                    chartData.push({ name: t.name, time: time, color: donutColors[colorIndex % donutColors.length] });
+                    totalFilteredSeconds += time;
+                    colorIndex++;
+                }
+            });
+
+            let generalTime = filter === 'all' ? generalTimeSpent : getTimeInRange(generalTimeLog);
+            if (generalTime > 0) {
+                chartData.push({ name: "General Focus", time: generalTime, color: '#94a3b8' });
+                totalFilteredSeconds += generalTime;
             }
-            
-            let activeTasks = tasks.filter(t => t.timeSpent > 0).sort((a,b) => b.timeSpent - a.timeSpent);
-            activeTasks.forEach(t => {
-                chartData.push({ name: t.name, time: t.timeSpent, color: donutColors[colorIndex % donutColors.length] });
-                colorIndex++;
+
+            totalDisplay.innerText = formatTimeSpent(totalFilteredSeconds);
+
+            let oldSvg = container.querySelector('svg');
+            if (oldSvg) oldSvg.remove();
+
+            if (totalFilteredSeconds === 0) {
+                container.style.background = 'var(--glass-bg)';
+                container.style.borderRadius = '50%';
+                return;
+            } else {
+                container.style.background = 'transparent';
+            }
+
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("viewBox", "0 0 42 42");
+            svg.setAttribute("class", "donut-chart-svg");
+
+            let currentOffset = 100; 
+            const tooltip = document.getElementById('donut-tooltip');
+
+            chartData.sort((a,b) => b.time - a.time).forEach(item => {
+                const slicePercent = (item.time / totalFilteredSeconds) * 100;
+                
+                const circle = document.createElementNS(svgNS, "circle");
+                circle.setAttribute("cx", "21");
+                circle.setAttribute("cy", "21");
+                circle.setAttribute("r", "15.91549430918954");
+                circle.setAttribute("fill", "transparent");
+                circle.setAttribute("stroke", item.color);
+                circle.setAttribute("stroke-width", "5");
+                circle.setAttribute("stroke-dasharray", `${slicePercent} ${100 - slicePercent}`);
+                circle.setAttribute("stroke-dashoffset", currentOffset);
+                circle.setAttribute("class", "donut-segment");
+
+                circle.addEventListener('mousemove', (e) => {
+                    tooltip.style.opacity = '1';
+                    tooltip.style.left = e.pageX + 'px';
+                    tooltip.style.top = e.pageY + 'px';
+                    tooltip.innerHTML = `<span style="color:${item.color};">●</span> ${item.name}<br>${formatTimeSpent(item.time)}`;
+                });
+                
+                circle.addEventListener('mouseout', () => {
+                    tooltip.style.opacity = '0';
+                });
+
+                svg.appendChild(circle);
+                currentOffset -= slicePercent; 
             });
 
-            chartData.forEach(item => {
-                let slicePercentage = (item.time / totalSeconds) * 100;
-                let endPercentage = currentPercentage + slicePercentage;
-                gradientString.push(`${item.color} ${currentPercentage}% ${endPercentage}%`);
-                currentPercentage = endPercentage;
-
-                legendContainer.innerHTML += `
-                    <div class="legend-item">
-                        <div class="legend-dot-name">
-                            <div class="legend-dot" style="background: ${item.color}"></div>
-                            <span title="${item.name}">${item.name}</span>
-                        </div>
-                        <span class="legend-time">${formatTimeSpent(item.time)}</span>
-                    </div>
-                `;
-            });
-
-            donutChart.style.background = `conic-gradient(${gradientString.join(', ')})`;
+            container.insertBefore(svg, container.firstChild);
         }
-
 
         // --- TIMER LOGIC ---
         let timeLimit = 1800; let timeLeft = timeLimit; let timerInterval = null;
@@ -568,7 +658,6 @@
                 document.getElementById("timer-digits").innerText = `${hours}:${mins}:${secs}`;
             } else { document.getElementById("timer-digits").innerText = `${mins}:${secs}`; }
             
-            // Linear Progress Bar Update
             const percent = (timeLeft / timeLimit) * 100;
             document.getElementById("timer-linear-progress").style.width = `${percent}%`;
         }
@@ -589,23 +678,27 @@
                     
                     let timeFormatted = formatDisplayTime(timeLimit);
                     let successMessage = `Congratulations you have completed ${timeFormatted}!`;
+                    const todayString = formatDate(new Date());
 
                     if (selectedTaskId) {
                         let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
                         if (taskToUpdate) {
+                            if (!taskToUpdate.timeLog) taskToUpdate.timeLog = {};
                             taskToUpdate.timeSpent += timeLimit; 
-                            const todayString = formatDate(new Date());
+                            taskToUpdate.timeLog[todayString] = (taskToUpdate.timeLog[todayString] || 0) + timeLimit;
                             taskToUpdate.completed.add(todayString);
                             saveTasksToCloud(); 
                             successMessage = `Congratulations you have completed ${timeFormatted} in "${taskToUpdate.name}"!`;
                         }
                     } else {
                         generalTimeSpent += timeLimit;
+                        generalTimeLog[todayString] = (generalTimeLog[todayString] || 0) + timeLimit;
                         saveTasksToCloud();
                     }
                     
                     showSuccessModal(successMessage);
                     resetTimer();
+                    renderDonutChart();
                 }
             }, 1000); 
         }
@@ -616,18 +709,23 @@
 
             const selectedTaskId = document.getElementById("timer-task-select").value;
             const timeSpentThisSession = timeLimit - timeLeft; 
+            const todayString = formatDate(new Date());
 
             if (timeSpentThisSession > 0) {
                 if (selectedTaskId) {
                     let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
                     if (taskToUpdate) {
+                        if (!taskToUpdate.timeLog) taskToUpdate.timeLog = {};
                         taskToUpdate.timeSpent += timeSpentThisSession;
+                        taskToUpdate.timeLog[todayString] = (taskToUpdate.timeLog[todayString] || 0) + timeSpentThisSession;
                         saveTasksToCloud();
                     }
                 } else {
                     generalTimeSpent += timeSpentThisSession;
+                    generalTimeLog[todayString] = (generalTimeLog[todayString] || 0) + timeSpentThisSession;
                     saveTasksToCloud();
                 }
+                renderDonutChart();
             }
             resetTimer();
         }
@@ -696,10 +794,10 @@
             });
         }
 
-        function toggleTaskCompletion(taskId, dateString, isChecked) { let task = tasks.find(t => t.id === taskId); if(isChecked) { task.completed.add(dateString); } else { task.completed.delete(dateString); } saveTasksToCloud(); }
-        function addTask() { const input = document.getElementById("new-task-input"); const val = input.value.trim(); if(val !== "") { tasks.push({ id: Date.now(), name: val, completed: new Set(), timeSpent: 0 }); input.value = ""; saveTasksToCloud(); } }
+        function toggleTaskCompletion(taskId, dateString, isChecked) { let task = tasks.find(t => t.id === taskId); if(isChecked) { task.completed.add(dateString); } else { task.completed.delete(dateString); } saveTasksToCloud(); renderHeatmap(); }
+        function addTask() { const input = document.getElementById("new-task-input"); const val = input.value.trim(); if(val !== "") { tasks.push({ id: Date.now(), name: val, completed: new Set(), timeSpent: 0, timeLog: {} }); input.value = ""; saveTasksToCloud(); } }
 
-        window.loginWithGoogle = loginWithGoogle; window.logout = logout; window.toggleTheme = toggleTheme; window.setTimerDuration = setTimerDuration; window.startTimer = startTimer; window.stopTimer = stopTimer; window.pauseTimer = pauseTimer; window.resetTimer = resetTimer; window.changeYear = changeYear; window.changeMonth = changeMonth; window.addTask = addTask; window.openModal = openModal; window.closeModal = closeModal; window.confirmDelete = confirmDelete; window.closeSuccessModal = closeSuccessModal;
+        window.loginWithGoogle = loginWithGoogle; window.logout = logout; window.toggleTheme = toggleTheme; window.setTimerDuration = setTimerDuration; window.startTimer = startTimer; window.stopTimer = stopTimer; window.pauseTimer = pauseTimer; window.resetTimer = resetTimer; window.changeYear = changeYear; window.changeMonth = changeMonth; window.addTask = addTask; window.openModal = openModal; window.closeModal = closeModal; window.confirmDelete = confirmDelete; window.closeSuccessModal = closeSuccessModal; window.renderDonutChart = renderDonutChart;
     </script>
 </body>
 </html>
