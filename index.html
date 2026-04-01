@@ -321,7 +321,6 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
-        // 🚨 REPLACE THIS OBJECT WITH YOUR FIREBASE CONFIG 🚨
         const firebaseConfig = {
             apiKey: "AIzaSyAjrbnYJB4OSLZRAJ3NRXVMgM6Y_VCsJ-Y",
             authDomain: "productivity-tracker-a662f.firebaseapp.com",
@@ -442,40 +441,23 @@
         function updateTimerDropdown() {
             const select = document.getElementById("timer-task-select");
             const currentSelection = select.value;
-            
             select.innerHTML = '<option value="">-- General Focus --</option>';
             tasks.forEach(task => {
-                let opt = document.createElement("option");
-                opt.value = task.id;
-                opt.innerText = task.name;
-                select.appendChild(opt);
+                let opt = document.createElement("option"); opt.value = task.id; opt.innerText = task.name; select.appendChild(opt);
             });
-            
-            // Restore selection if the task still exists
-            if (tasks.find(t => t.id == currentSelection)) {
-                select.value = currentSelection;
-            }
+            if (tasks.find(t => t.id == currentSelection)) { select.value = currentSelection; }
         }
 
         function setTimerDuration() {
-            pauseTimer();
-            timeLimit = parseInt(document.getElementById("timer-duration").value);
-            timeLeft = timeLimit;
-            updateTimerDisplay();
+            pauseTimer(); timeLimit = parseInt(document.getElementById("timer-duration").value); timeLeft = timeLimit; updateTimerDisplay();
         }
 
         function updateTimerDisplay() {
-            let mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            let secs = (timeLeft % 60).toString().padStart(2, '0');
-            let hours = Math.floor(timeLeft / 3600);
-            
+            let mins = Math.floor(timeLeft / 60).toString().padStart(2, '0'); let secs = (timeLeft % 60).toString().padStart(2, '0'); let hours = Math.floor(timeLeft / 3600);
             if (hours > 0) {
                 mins = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
                 document.getElementById("timer-digits").innerText = `${hours}:${mins}:${secs}`;
-            } else {
-                document.getElementById("timer-digits").innerText = `${mins}:${secs}`;
-            }
-
+            } else { document.getElementById("timer-digits").innerText = `${mins}:${secs}`; }
             const offset = (1 - (timeLeft / timeLimit)) * 283;
             document.getElementById("timer-progress").style.strokeDashoffset = offset;
         }
@@ -483,33 +465,39 @@
         function startTimer() {
             if (timerInterval) return;
             const selectedTaskId = document.getElementById("timer-task-select").value;
+            
+            // NEW: Calculate the exact timestamp when the timer should finish
+            const endTime = Date.now() + (timeLeft * 1000);
 
             timerInterval = setInterval(() => {
-                if (timeLeft > 0) {
-                    timeLeft--; updateTimerDisplay();
+                // NEW: Constantly check the true system clock to see how much time is remaining
+                const newTimeLeft = Math.round((endTime - Date.now()) / 1000);
+
+                if (newTimeLeft > 0) { 
+                    timeLeft = newTimeLeft; 
+                    updateTimerDisplay(); 
                 } else {
                     clearInterval(timerInterval); 
                     timerInterval = null; 
-
-                    // Log Time to Task
+                    timeLeft = 0;
+                    updateTimerDisplay(); // Force display to 00:00
+                    
                     if (selectedTaskId) {
                         let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
                         if (taskToUpdate) {
-                            taskToUpdate.timeSpent += timeLimit; // Add total session seconds
-                            saveTasksToCloud(); // Save immediately, onSnapshot will update UI
+                            taskToUpdate.timeSpent += timeLimit; 
+                            saveTasksToCloud(); 
                             alert(`Focus complete! Added ${Math.round(timeLimit / 60)} minutes to "${taskToUpdate.name}".`);
                         }
-                    } else {
-                        alert("Focus session complete!");
-                    }
+                    } else { alert("Focus session complete!"); }
                     resetTimer();
                 }
-            }, 1000);
+            }, 1000); // Even if the browser slows this 1000ms tick down, the clock math above corrects it!
         }
 
         function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
         function resetTimer() { setTimerDuration(); }
-
+        
         // --- UI RENDERING LOGIC ---
         function populateYearDropdown() {
             const select = document.getElementById("year-select");
