@@ -114,7 +114,7 @@
         input[type="text"] { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); border-radius: 8px; padding: 8px 12px; font-family: 'DM Mono', monospace; font-size: 0.8rem; outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; }
         input[type="text"]:focus { border-color: var(--accent-glow); background: var(--accent-dim); }
         
-        /* Select Dropdowns Perfectly Centered Fix */
+       /* Select Dropdowns Centered Fix */
         select { 
             background: var(--input-bg); 
             border: 1px solid var(--input-border); 
@@ -134,13 +134,10 @@
             background-position: right 10px center;
             background-size: 14px;
             
-            /* Crucial alignment rules */
-            padding-top: 8px;
-            padding-bottom: 8px;
-            padding-right: 32px;  /* Room for arrow */
-            padding-left: 32px;   /* Exact same padding on the left balances the text! */
+            /* Restored standard padding for correct visual centering */
+            padding: 8px 32px 8px 12px;
             text-align: center;
-            text-align-last: center; /* Forces center alignment even in Webkit */
+            text-align-last: center; 
         }
         [data-theme="light"] select {
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(20,25,50,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -160,7 +157,7 @@
         .timer-content-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; align-items: center; width: 100%; }
         .timer-date { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em; text-align: center; width: 100%;}
         .timer-select-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; width: 100%; align-items: center; }
-        .timer-select-row select { width: 90%; }
+        .timer-select-row select { width: 90%; text-align-last: center; }
         
         .sleek-timer-display { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin-bottom: 20px; }
         .timer-digits { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.04em; line-height: 1; margin-bottom: 6px; text-shadow: 0 4px 16px rgba(0,0,0,0.2); }
@@ -312,6 +309,7 @@
                             <option value="">-- General Focus --</option>
                         </select>
                         <select id="timer-duration" onchange="setTimerDuration()">
+                            <option value="600">10 Minutes</option>
                             <option value="1800">30 Minutes</option>
                             <option value="3600">1 Hour</option>
                             <option value="7200">2 Hours</option>
