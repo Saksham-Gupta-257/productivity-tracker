@@ -6,6 +6,7 @@
     <title>Tracker</title>
 
     <link rel="icon" href="logo.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
@@ -328,13 +329,12 @@
         </div>
     </div>
 
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
-        // 🚨 KEEP YOUR ACTUAL CONFIG HERE 🚨
+        // 🚨 REPLACE THIS OBJECT WITH YOUR FIREBASE CONFIG 🚨
         const firebaseConfig = {
             apiKey: "AIzaSyAjrbnYJB4OSLZRAJ3NRXVMgM6Y_VCsJ-Y",
             authDomain: "productivity-tracker-a662f.firebaseapp.com",
@@ -357,9 +357,56 @@
         let selectedMonth = today.getMonth();
         let taskToDeleteId = null; 
 
-        // Login & Logout Functions 
-        async function loginWithGoogle() { alert("Auth is bypassed for local testing."); }
-        async function logout() { alert("Auth is bypassed for local testing."); }
+        // --- AUTHENTICATION & REAL-TIME LISTENER ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('user-email').innerText = user.email;
+                
+                tasksDocRef = doc(db, "users", user.uid);
+                document.getElementById("task-list").innerHTML = "<tr><td colspan='4'>Syncing your real-time data...</td></tr>";
+                
+                unsubscribeSnapshot = onSnapshot(tasksDocRef, (docSnap) => {
+                    if (docSnap.exists() && docSnap.data().tasks) {
+                        const savedData = docSnap.data().tasks;
+                        tasks = savedData.map(t => ({ 
+                            id: t.id, 
+                            name: t.name, 
+                            completed: new Set(t.completed),
+                            timeSpent: t.timeSpent || 0 
+                        }));
+                    } else {
+                        tasks = [
+                            { id: 1, name: "Morning Exercise", completed: new Set(), timeSpent: 0 },
+                            { id: 2, name: "Read 10 Pages", completed: new Set(), timeSpent: 0 }
+                        ];
+                        saveTasksToCloud(); 
+                    }
+                    
+                    renderTracker();
+                    renderHeatmap();
+                    updateTimerDropdown();
+                });
+
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('hidden');
+                if(unsubscribeSnapshot) unsubscribeSnapshot(); 
+                tasksDocRef = null;
+                tasks = [];
+            }
+        });
+
+        async function loginWithGoogle() {
+            try { await signInWithPopup(auth, provider); } 
+            catch (error) { alert("Login Failed: " + error.message); }
+        }
+
+        async function logout() {
+            try { await signOut(auth); } 
+            catch (error) { console.error("Logout Error:", error); }
+        }
 
         async function saveTasksToCloud() {
             if (!tasksDocRef) return;
@@ -371,6 +418,7 @@
             }
         }
 
+        // --- THEME LOGIC ---
         function toggleTheme() {
             const htmlNode = document.documentElement;
             const current = htmlNode.getAttribute("data-theme") === 'light' ? 'dark' : 'light';
@@ -393,33 +441,6 @@
             populateYearDropdown();
             document.getElementById("month-select").value = selectedMonth;
             setTimerDuration();
-
-            // MOCK AUTHENTICATION BYPASS
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('user-email').innerText = "Testing @ Localhost";
-            document.getElementById('user-email').style.display = "block";
-            
-            tasksDocRef = doc(db, "users", "localhost_test_user");
-            document.getElementById("task-list").innerHTML = "<tr><td colspan='4'>Syncing test data...</td></tr>";
-
-            unsubscribeSnapshot = onSnapshot(tasksDocRef, (docSnap) => {
-                if (docSnap.exists() && docSnap.data().tasks) {
-                    const savedData = docSnap.data().tasks;
-                    tasks = savedData.map(t => ({ 
-                        id: t.id, 
-                        name: t.name, 
-                        completed: new Set(t.completed),
-                        timeSpent: t.timeSpent || 0 
-                    }));
-                } else {
-                    tasks = [ { id: 1, name: "Local Test Habit", completed: new Set(), timeSpent: 0 } ];
-                    saveTasksToCloud(); 
-                }
-                renderTracker();
-                renderHeatmap();
-                updateTimerDropdown();
-            });
         };
 
         // --- CONNECTED TIMER LOGIC ---
@@ -441,12 +462,10 @@
 
         function formatDisplayTime(seconds) {
             if (seconds >= 3600) {
-                let h = Math.floor(seconds / 3600);
-                let m = Math.floor((seconds % 3600) / 60);
+                let h = Math.floor(seconds / 3600); let m = Math.floor((seconds % 3600) / 60);
                 return `${h} hour${h > 1 ? 's' : ''} and ${m} minute${m !== 1 ? 's' : ''}`;
             } else {
-                let m = Math.floor(seconds / 60);
-                return `${m} minute${m !== 1 ? 's' : ''}`;
+                let m = Math.floor(seconds / 60); return `${m} minute${m !== 1 ? 's' : ''}`;
             }
         }
 
@@ -460,7 +479,6 @@
             document.getElementById("timer-progress").style.strokeDashoffset = offset;
         }
 
-        // UPDATED START TIMER: Triggers success modal and auto-checks the task for today
         function startTimer() {
             if (timerInterval) return;
             const selectedTaskId = document.getElementById("timer-task-select").value;
@@ -472,7 +490,6 @@
                 if (newTimeLeft > 0) { 
                     timeLeft = newTimeLeft; updateTimerDisplay(); 
                 } else {
-                    // TIMER COMPLETED FULLY!
                     clearInterval(timerInterval); timerInterval = null; 
                     timeLeft = 0; updateTimerDisplay(); 
                     
@@ -484,7 +501,7 @@
                         if (taskToUpdate) {
                             taskToUpdate.timeSpent += timeLimit; 
                             
-                            // AUTO-CHECK OFF THE TASK FOR TODAY
+                            // AUTO-CHECK FOR TODAY
                             const todayString = formatDate(new Date());
                             taskToUpdate.completed.add(todayString);
                             
@@ -499,26 +516,19 @@
             }, 1000); 
         }
 
-        // NEW STOP TIMER: Logs partial time and resets
         function stopTimer() {
-            if (!timerInterval && timeLeft === timeLimit) return; // Ignore if timer hasn't started
-            
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
+            if (!timerInterval && timeLeft === timeLimit) return; 
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 
             const selectedTaskId = document.getElementById("timer-task-select").value;
-            const timeSpentThisSession = timeLimit - timeLeft; // Calculate exact elapsed seconds
+            const timeSpentThisSession = timeLimit - timeLeft; 
 
             if (selectedTaskId && timeSpentThisSession > 0) {
                 let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
                 if (taskToUpdate) {
                     taskToUpdate.timeSpent += timeSpentThisSession;
                     saveTasksToCloud();
-                    let timeFormatted = formatDisplayTime(timeSpentThisSession);
-                    // Optional: You can remove this alert if you want Stop to be completely silent
-                    alert(`Logged ${timeFormatted} to "${taskToUpdate.name}".`);
+                    // Removed the alert here as it can be annoying, it just silently saves
                 }
             }
             resetTimer();
