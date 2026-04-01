@@ -83,6 +83,7 @@
 
         .hidden { display: none !important; }
 
+        /* Login / Top Bar */
         .login-container { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 50; }
         .login-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); padding: 50px 40px; text-align: center; max-width: 400px; width: 90%; animation: modalIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
         .login-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 10px; }
@@ -96,26 +97,26 @@
         .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); width: 100%; }
         .brand { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; letter-spacing: 0.04em; color: var(--accent); }
         .brand span { color: var(--text-primary); font-weight: 400; }
-        
         .user-controls { display: flex; align-items: center; gap: 16px; }
         .user-email { font-size: 0.8rem; color: var(--text-secondary); display: none; }
-
         .theme-btn { background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent); border-radius: 10px; padding: 8px 16px; font-family: 'DM Mono', monospace; font-size: 0.8rem; cursor: pointer; transition: all 0.25s; letter-spacing: 0.05em; font-weight: bold; }
         .theme-btn:hover { background: var(--accent-glow); transform: translateY(-1px); }
 
+        /* Updated 3-Panel Top Row Layout */
         .top-row { display: flex; gap: 24px; width: 100%; align-items: stretch; }
         .panel { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); overflow: hidden; transition: background 0.3s, border-color 0.3s; display: flex; flex-direction: column; }
         
-        #timerPanel { flex: 0 0 calc(25% - 12px); max-width: calc(25% - 12px); padding: 28px; justify-content: space-between; }
-        #heatmapPanel { flex: 0 0 calc(75% - 12px); max-width: calc(75% - 12px); padding: 28px; justify-content: space-between; }
+        #timerPanel { flex: 0 0 320px; padding: 28px; justify-content: space-between; }
+        #heatmapPanel { flex: 1; min-width: 0; padding: 28px; justify-content: space-between; }
+        #analyticsPanel { flex: 0 0 300px; padding: 28px; justify-content: space-between; }
 
         .panel-title { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .panel-title::after { content: ''; flex: 1; height: 1px; background: var(--glass-border); }
 
+        /* Form Elements */
         select, input[type="text"] { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); border-radius: 10px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; }
         select:focus, input[type="text"]:focus { border-color: var(--accent-glow); background: var(--accent-dim); }
         select option { background: #1a1f3a; color: #fff; }
-
         .btn { background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent); border-radius: 10px; padding: 10px 18px; font-family: 'DM Mono', monospace; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.04em; font-weight: bold; }
         .btn:hover { background: var(--accent-glow); transform: translateY(-2px); box-shadow: 0 6px 16px var(--accent-glow); }
         .btn:active { transform: translateY(0); }
@@ -124,11 +125,11 @@
         .btn.neutral { background: var(--input-bg); border-color: var(--input-border); color: var(--text-secondary); }
         .btn.neutral:hover { background: var(--glass-border); color: var(--text-primary); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
 
+        /* Timer Styles */
         .timer-content-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; align-items: center; width: 100%; }
         .timer-date { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em; text-align: center; width: 100%;}
         .timer-select-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; width: 100%; align-items: center; }
         .timer-select-row select { width: 90%; text-align: center;}
-        
         .timer-circle-wrap { display: flex; justify-content: center; align-items: center; margin: 0px 0 25px; }
         .timer-svg-container { position: relative; width: 180px; height: 180px; }
         .timer-svg { width: 180px; height: 180px; transform: rotate(-90deg); }
@@ -139,6 +140,7 @@
         .timer-label { font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.1em; margin-top: 4px; font-weight: bold;}
         .timer-controls { display: flex; gap: 12px; justify-content: center; width: 100%; flex-wrap: wrap;}
 
+        /* Heatmap Styles */
         .heatmap-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .heatmap-top select { min-width: 120px; }
         .heatmap-scroll { overflow-x: auto; padding-bottom: 10px; margin: auto 0; width: 100%;}
@@ -155,6 +157,26 @@
         .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 0.8rem; color: var(--text-secondary); justify-content: flex-end;}
         .legend-cell { width: 14px; height: 14px; border-radius: 3px; }
 
+        /* NEW: Analytics Donut Chart Styles */
+        .analytics-content { display: flex; flex-direction: column; flex: 1; }
+        .donut-container { position: relative; width: 160px; height: 160px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; }
+        /* The conic-gradient draws the pie chart, the mask punches a hole in the middle to make a donut */
+        .donut-chart { 
+            position: absolute; inset: 0; border-radius: 50%; background: var(--glass-bg); transition: background 0.5s; 
+            mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #fff calc(100% - 14px)); 
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #fff calc(100% - 14px)); 
+        }
+        .donut-center { text-align: center; z-index: 2; display: flex; flex-direction: column; }
+        .donut-total { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.04em;}
+        .donut-label { font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 0.1em; font-weight: bold;}
+        
+        .donut-legend { display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 5px; margin-top: auto;}
+        .legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; background: var(--glass-bg); padding: 8px 12px; border-radius: 8px;}
+        .legend-dot-name { display: flex; align-items: center; gap: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px rgba(0,0,0,0.3);}
+        .legend-time { color: var(--text-secondary); font-family: 'DM Mono', monospace; font-weight: bold; }
+
+        /* Tracker Styles */
         .tracker-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
         #trackerPanel { width: 100%; padding: 28px; display: block; } 
         .task-input { flex: 1; min-width: 200px; }
@@ -178,13 +200,12 @@
         .progress-cell { min-width: 120px; }
         .progress-bar-wrap { background: var(--progress-bg); border-radius: 12px; height: 12px; overflow: hidden; width: 100px; margin: 0 auto; border: 1px solid var(--glass-border);}
         .progress-bar-fill { height: 100%; background: var(--progress-fill); border-radius: 12px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        
         .time-cell { font-family: 'DM Mono', monospace; font-weight: bold; color: var(--accent); font-size: 0.8rem; min-width: 80px;}
 
         .delete-task-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.4rem; padding: 4px 8px; border-radius: 6px; transition: color 0.2s, background 0.2s; line-height: 1; }
         .delete-task-btn:hover { color: var(--danger); background: var(--danger-dim); }
 
-        /* Generic Modal Styling */
+        /* Modals */
         .modal-overlay { display: none; position: fixed; inset: 0; background: var(--modal-overlay); z-index: 1000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 20px; padding: 40px 50px; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center; animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
@@ -200,7 +221,13 @@
         .heat-cell[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: rgba(10,15,35,0.95); color: #fff; font-size: 0.75rem; padding: 8px 12px; border-radius: 8px; white-space: nowrap; pointer-events: none; z-index: 100; border: 1px solid var(--glass-border); }
         [data-theme="light"] .heat-cell[data-tip]:hover::after { background: rgba(20,25,50,0.95); }
 
-        @media (max-width: 1024px) { .top-row { flex-direction: column; } #timerPanel, #heatmapPanel { flex: 1 1 auto; max-width: 100%; } body { padding: 16px; } .panel { padding: 20px; } .user-email { display: none !important; } }
+        @media (max-width: 1024px) { 
+            .top-row { flex-direction: column; } 
+            #timerPanel, #heatmapPanel, #analyticsPanel { flex: 1 1 auto; max-width: 100%; } 
+            body { padding: 16px; } 
+            .panel { padding: 20px; } 
+            .user-email { display: none !important; } 
+        }
     </style>
 </head>
 <body>
@@ -279,6 +306,21 @@
                     More
                 </div>
             </div>
+
+            <div class="panel" id="analyticsPanel">
+                <h2 class="panel-title">Distribution</h2>
+                <div class="analytics-content">
+                    <div class="donut-container">
+                        <div class="donut-chart" id="donut-chart"></div>
+                        <div class="donut-center">
+                            <span class="donut-total" id="donut-total-time">0m</span>
+                            <span class="donut-label">TOTAL TIME</span>
+                        </div>
+                    </div>
+                    <div class="donut-legend" id="donut-legend">
+                        </div>
+                </div>
+            </div>
         </div>
 
         <div class="panel" id="trackerPanel">
@@ -352,73 +394,30 @@
         let tasksDocRef = null;
         let unsubscribeSnapshot = null; 
         let tasks = [];
+        let generalTimeSpent = 0; // NEW: Global tracker for General Focus
+        
         const today = new Date();
         let selectedYear = today.getFullYear();
         let selectedMonth = today.getMonth();
         let taskToDeleteId = null; 
 
-        // --- AUTHENTICATION & REAL-TIME LISTENER ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('user-email').innerText = user.email;
-                
-                tasksDocRef = doc(db, "users", user.uid);
-                document.getElementById("task-list").innerHTML = "<tr><td colspan='4'>Syncing your real-time data...</td></tr>";
-                
-                unsubscribeSnapshot = onSnapshot(tasksDocRef, (docSnap) => {
-                    if (docSnap.exists() && docSnap.data().tasks) {
-                        const savedData = docSnap.data().tasks;
-                        tasks = savedData.map(t => ({ 
-                            id: t.id, 
-                            name: t.name, 
-                            completed: new Set(t.completed),
-                            timeSpent: t.timeSpent || 0 
-                        }));
-                    } else {
-                        tasks = [
-                            { id: 1, name: "Morning Exercise", completed: new Set(), timeSpent: 0 },
-                            { id: 2, name: "Read 10 Pages", completed: new Set(), timeSpent: 0 }
-                        ];
-                        saveTasksToCloud(); 
-                    }
-                    
-                    renderTracker();
-                    renderHeatmap();
-                    updateTimerDropdown();
-                });
+        // Beautiful curated colors for the Donut Chart
+        const donutColors = ['#4ade9a', '#22d3ee', '#c084fc', '#fb923c', '#f472b6', '#facc15', '#60a5fa', '#a78bfa'];
 
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('hidden');
-                if(unsubscribeSnapshot) unsubscribeSnapshot(); 
-                tasksDocRef = null;
-                tasks = [];
-            }
-        });
-
-        async function loginWithGoogle() {
-            try { await signInWithPopup(auth, provider); } 
-            catch (error) { alert("Login Failed: " + error.message); }
-        }
-
-        async function logout() {
-            try { await signOut(auth); } 
-            catch (error) { console.error("Logout Error:", error); }
-        }
+        // Login & Logout Functions (Bypassed for local testing, remove bypass before GitHub push)
+        async function loginWithGoogle() { alert("Auth is bypassed for local testing."); }
+        async function logout() { alert("Auth is bypassed for local testing."); }
 
         async function saveTasksToCloud() {
             if (!tasksDocRef) return;
             try {
                 const dataToSave = tasks.map(t => ({ id: t.id, name: t.name, completed: Array.from(t.completed), timeSpent: t.timeSpent }));
-                await setDoc(tasksDocRef, { tasks: dataToSave }, { merge: true });
+                await setDoc(tasksDocRef, { tasks: dataToSave, generalTimeSpent: generalTimeSpent }, { merge: true });
             } catch (error) {
                 console.error("Error saving data:", error);
             }
         }
 
-        // --- THEME LOGIC ---
         function toggleTheme() {
             const htmlNode = document.documentElement;
             const current = htmlNode.getAttribute("data-theme") === 'light' ? 'dark' : 'light';
@@ -441,9 +440,98 @@
             populateYearDropdown();
             document.getElementById("month-select").value = selectedMonth;
             setTimerDuration();
+
+            // MOCK AUTHENTICATION BYPASS FOR LOCAL TESTING
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('user-email').innerText = "Testing @ Localhost";
+            document.getElementById('user-email').style.display = "block";
+            
+            tasksDocRef = doc(db, "users", "localhost_test_user");
+            document.getElementById("task-list").innerHTML = "<tr><td colspan='4'>Syncing test data...</td></tr>";
+
+            unsubscribeSnapshot = onSnapshot(tasksDocRef, (docSnap) => {
+                if (docSnap.exists() && docSnap.data().tasks) {
+                    const savedData = docSnap.data().tasks;
+                    generalTimeSpent = docSnap.data().generalTimeSpent || 0; // Fetch general time
+                    
+                    tasks = savedData.map(t => ({ 
+                        id: t.id, name: t.name, completed: new Set(t.completed), timeSpent: t.timeSpent || 0 
+                    }));
+                } else {
+                    tasks = [ { id: 1, name: "Local Test Habit", completed: new Set(), timeSpent: 0 } ];
+                    generalTimeSpent = 0;
+                    saveTasksToCloud(); 
+                }
+                renderTracker();
+                renderHeatmap();
+                updateTimerDropdown();
+                renderDonutChart(); // Trigger graph render
+            });
         };
 
-        // --- CONNECTED TIMER LOGIC ---
+        // --- NEW: DONUT CHART RENDER LOGIC ---
+        function renderDonutChart() {
+            const donutChart = document.getElementById('donut-chart');
+            const legendContainer = document.getElementById('donut-legend');
+            const totalDisplay = document.getElementById('donut-total-time');
+
+            // Calculate overall total time
+            let totalSeconds = generalTimeSpent;
+            tasks.forEach(t => totalSeconds += t.timeSpent);
+
+            totalDisplay.innerText = formatTimeSpent(totalSeconds);
+            legendContainer.innerHTML = "";
+
+            if (totalSeconds === 0) {
+                donutChart.style.background = 'var(--glass-bg)';
+                return;
+            }
+
+            let gradientString = [];
+            let currentPercentage = 0;
+            let colorIndex = 0;
+
+            // Prepare Data Array
+            let chartData = [];
+            
+            // Put General Focus at the top if it has time
+            if (generalTimeSpent > 0) {
+                chartData.push({ name: "General Focus", time: generalTimeSpent, color: '#94a3b8' }); // Unique grayish color
+            }
+            
+            // Add all other active tasks, sorted highest time to lowest
+            let activeTasks = tasks.filter(t => t.timeSpent > 0).sort((a,b) => b.timeSpent - a.timeSpent);
+            activeTasks.forEach(t => {
+                chartData.push({ name: t.name, time: t.timeSpent, color: donutColors[colorIndex % donutColors.length] });
+                colorIndex++;
+            });
+
+            // Build Gradient and Legend
+            chartData.forEach(item => {
+                let slicePercentage = (item.time / totalSeconds) * 100;
+                let endPercentage = currentPercentage + slicePercentage;
+                
+                gradientString.push(`${item.color} ${currentPercentage}% ${endPercentage}%`);
+                currentPercentage = endPercentage;
+
+                legendContainer.innerHTML += `
+                    <div class="legend-item">
+                        <div class="legend-dot-name">
+                            <div class="legend-dot" style="background: ${item.color}"></div>
+                            <span title="${item.name}">${item.name}</span>
+                        </div>
+                        <span class="legend-time">${formatTimeSpent(item.time)}</span>
+                    </div>
+                `;
+            });
+
+            // Apply the raw CSS conic gradient
+            donutChart.style.background = `conic-gradient(${gradientString.join(', ')})`;
+        }
+
+
+        // --- TIMER LOGIC ---
         let timeLimit = 1800; let timeLeft = timeLimit; let timerInterval = null;
 
         function updateTimerDropdown() {
@@ -500,14 +588,15 @@
                         let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
                         if (taskToUpdate) {
                             taskToUpdate.timeSpent += timeLimit; 
-                            
-                            // AUTO-CHECK FOR TODAY
                             const todayString = formatDate(new Date());
                             taskToUpdate.completed.add(todayString);
-                            
                             saveTasksToCloud(); 
                             successMessage = `Congratulations you have completed ${timeFormatted} in "${taskToUpdate.name}"!`;
                         }
+                    } else {
+                        // NEW: Save to General Focus Bucket
+                        generalTimeSpent += timeLimit;
+                        saveTasksToCloud();
                     }
                     
                     showSuccessModal(successMessage);
@@ -523,12 +612,17 @@
             const selectedTaskId = document.getElementById("timer-task-select").value;
             const timeSpentThisSession = timeLimit - timeLeft; 
 
-            if (selectedTaskId && timeSpentThisSession > 0) {
-                let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
-                if (taskToUpdate) {
-                    taskToUpdate.timeSpent += timeSpentThisSession;
+            if (timeSpentThisSession > 0) {
+                if (selectedTaskId) {
+                    let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
+                    if (taskToUpdate) {
+                        taskToUpdate.timeSpent += timeSpentThisSession;
+                        saveTasksToCloud();
+                    }
+                } else {
+                     // NEW: Save to General Focus Bucket
+                    generalTimeSpent += timeSpentThisSession;
                     saveTasksToCloud();
-                    // Removed the alert here as it can be annoying, it just silently saves
                 }
             }
             resetTimer();
@@ -574,7 +668,7 @@
         function changeMonth() { selectedMonth = parseInt(document.getElementById("month-select").value); renderTracker(); }
         function getDaysInMonth(year, month) { return new Date(year, month + 1, 0).getDate(); }
         function formatDate(dateObj) { let y = dateObj.getFullYear(); let m = (dateObj.getMonth() + 1).toString().padStart(2, '0'); let d = dateObj.getDate().toString().padStart(2, '0'); return `${y}-${m}-${d}`; }
-        function formatTimeSpent(totalSeconds) { if (!totalSeconds) return "0m"; const h = Math.floor(totalSeconds / 3600); const m = Math.floor((totalSeconds % 3600) / 60); if (h > 0) return `${h}h ${m}m`; return `${m}m`; }
+        function formatTimeSpent(totalSeconds) { if (!totalSeconds || totalSeconds === 0) return "0m"; const h = Math.floor(totalSeconds / 3600); const m = Math.floor((totalSeconds % 3600) / 60); if (h > 0) return `${h}h ${m}m`; return `${m}m`; }
 
         function renderTracker() {
             const daysInMonth = getDaysInMonth(selectedYear, selectedMonth); const thead = document.getElementById("table-header"); const tbody = document.getElementById("task-list");
