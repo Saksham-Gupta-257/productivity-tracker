@@ -110,22 +110,43 @@
         .panel-title { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 8px; flex: 1; margin: 0; }
         .panel-title::after { content: ''; flex: 1; height: 1px; background: var(--glass-border); }
 
-        /* Form Elements & Fix for Dropdown Alignment */
-        select, input[type="text"] { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); border-radius: 8px; padding: 8px 12px; font-family: 'DM Mono', monospace; font-size: 0.8rem; outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; }
+        /* Form Elements */
+        input[type="text"] { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); border-radius: 8px; padding: 8px 12px; font-family: 'DM Mono', monospace; font-size: 0.8rem; outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; }
+        input[type="text"]:focus { border-color: var(--accent-glow); background: var(--accent-dim); }
         
-        /* Custom sleek dropdown arrow */
-        select {
+        /* Select Dropdowns Perfectly Centered Fix */
+        select { 
+            background: var(--input-bg); 
+            border: 1px solid var(--input-border); 
+            color: var(--text-primary); 
+            border-radius: 8px; 
+            font-family: 'DM Mono', monospace; 
+            font-size: 0.8rem; 
+            outline: none; 
+            cursor: pointer; 
+            transition: border-color 0.2s, background 0.2s; 
+            -webkit-appearance: none; 
+            appearance: none;
+            
+            /* Background Arrow styling */
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 14px;
-            padding-right: 32px; /* Make room for arrow */
+            
+            /* Crucial alignment rules */
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-right: 32px;  /* Room for arrow */
+            padding-left: 32px;   /* Exact same padding on the left balances the text! */
+            text-align: center;
+            text-align-last: center; /* Forces center alignment even in Webkit */
         }
         [data-theme="light"] select {
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(20,25,50,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
         }
-        select:focus, input[type="text"]:focus { border-color: var(--accent-glow); background: var(--accent-dim); }
-        select option { background: #1a1f3a; color: #fff; }
+        select:focus { border-color: var(--accent-glow); background: var(--accent-dim); }
+        select option { background: #1a1f3a; color: #fff; text-align: center; }
         
         .btn { background: var(--accent-dim); border: 1px solid var(--accent-glow); color: var(--accent); border-radius: 8px; padding: 8px 16px; font-family: 'DM Mono', monospace; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.04em; font-weight: bold; }
         .btn:hover { background: var(--accent-glow); transform: translateY(-2px); box-shadow: 0 6px 16px var(--accent-glow); }
@@ -139,9 +160,7 @@
         .timer-content-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; align-items: center; width: 100%; }
         .timer-date { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em; text-align: center; width: 100%;}
         .timer-select-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; width: 100%; align-items: center; }
-        
-        /* Force left alignment on the select row to work beautifully with the new custom arrow */
-        .timer-select-row select { width: 90%; text-align: left; }
+        .timer-select-row select { width: 90%; }
         
         .sleek-timer-display { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin-bottom: 20px; }
         .timer-digits { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.04em; line-height: 1; margin-bottom: 6px; text-shadow: 0 4px 16px rgba(0,0,0,0.2); }
@@ -180,7 +199,6 @@
         .donut-segment:hover { stroke-width: 7; opacity: 0.8; }
         .donut-center { position: absolute; text-align: center; z-index: 2; display: flex; flex-direction: column; pointer-events: none; }
         
-        /* Updated Center Text Styles (Smaller & Simple Font) */
         .donut-total { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); letter-spacing: 0;}
         .donut-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 0.6rem; color: var(--text-secondary); letter-spacing: 0.05em; font-weight: 600; margin-top: 2px;}
         
@@ -340,12 +358,12 @@
             <div class="panel" id="analyticsPanel">
                 <div class="panel-header">
                     <h2 class="panel-title">Distribution</h2>
-                    <select id="dist-filter" style="padding: 4px 8px; font-size: 0.75rem; min-width: 90px; margin-left: 10px;" onchange="renderDonutChart()">
-                        <option value="today">Today</option>
+                    <select id="dist-filter" style="font-size: 0.75rem; min-width: 90px; margin-left: 10px;" onchange="renderDonutChart()">
+                        <option value="today" selected>Today</option>
                         <option value="yesterday">Yesterday</option>
                         <option value="week">Last 7 Days</option>
                         <option value="month">Last 30 Days</option>
-                        <option value="all" selected>All Time</option>
+                        <option value="all">All Time</option>
                     </select>
                 </div>
                 <div class="analytics-content">
