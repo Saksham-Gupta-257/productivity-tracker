@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker</title>
-    <link rel="icon" href="logo.png">
+    <title>Sleek Productivity Dashboard</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
@@ -122,7 +122,6 @@
         .btn.neutral { background: var(--input-bg); border-color: var(--input-border); color: var(--text-secondary); }
         .btn.neutral:hover { background: var(--glass-border); color: var(--text-primary); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
 
-        /* Updated Timer Styles for Task Select */
         .timer-content-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; align-items: center; width: 100%; }
         .timer-date { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em; text-align: center; width: 100%;}
         .timer-select-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; width: 100%; align-items: center; }
@@ -136,7 +135,7 @@
         .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
         .timer-digits { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.04em; }
         .timer-label { font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.1em; margin-top: 4px; font-weight: bold;}
-        .timer-controls { display: flex; gap: 12px; justify-content: center; width: 100%; }
+        .timer-controls { display: flex; gap: 12px; justify-content: center; width: 100%; flex-wrap: wrap;}
 
         .heatmap-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .heatmap-top select { min-width: 120px; }
@@ -183,6 +182,7 @@
         .delete-task-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.4rem; padding: 4px 8px; border-radius: 6px; transition: color 0.2s, background 0.2s; line-height: 1; }
         .delete-task-btn:hover { color: var(--danger); background: var(--danger-dim); }
 
+        /* Generic Modal Styling */
         .modal-overlay { display: none; position: fixed; inset: 0; background: var(--modal-overlay); z-index: 1000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 20px; padding: 40px 50px; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center; animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
@@ -255,7 +255,8 @@
                 <div class="timer-controls">
                     <button class="btn" onclick="startTimer()">Start</button>
                     <button class="btn neutral" onclick="pauseTimer()">Pause</button>
-                    <button class="btn danger" onclick="resetTimer()">Reset</button>
+                    <button class="btn danger" onclick="stopTimer()">Stop</button>
+                    <button class="btn neutral" onclick="resetTimer()">Reset</button>
                 </div>
             </div>
 
@@ -315,12 +316,24 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-box">
+            <div class="modal-icon">🎉</div>
+            <div class="modal-title">Time's Up!</div>
+            <div class="modal-msg" id="success-msg">Congratulations you have completed the timer!</div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeSuccessModal()">Awesome</button>
+            </div>
+        </div>
+    </div>
+
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        // Added onSnapshot to imports for real-time syncing
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
+        // 🚨 KEEP YOUR ACTUAL CONFIG HERE 🚨
         const firebaseConfig = {
             apiKey: "AIzaSyAjrbnYJB4OSLZRAJ3NRXVMgM6Y_VCsJ-Y",
             authDomain: "productivity-tracker-a662f.firebaseapp.com",
@@ -336,67 +349,16 @@
         const provider = new GoogleAuthProvider();
 
         let tasksDocRef = null;
-        let unsubscribeSnapshot = null; // Used to stop listening when logged out
+        let unsubscribeSnapshot = null; 
         let tasks = [];
         const today = new Date();
         let selectedYear = today.getFullYear();
         let selectedMonth = today.getMonth();
         let taskToDeleteId = null; 
 
-        // --- AUTHENTICATION & REAL-TIME LISTENER ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('user-email').innerText = user.email;
-                
-                tasksDocRef = doc(db, "users", user.uid);
-                document.getElementById("task-list").innerHTML = "<tr><td colspan='4'>Syncing your real-time data...</td></tr>";
-                
-                // Real-time Database Listener
-                unsubscribeSnapshot = onSnapshot(tasksDocRef, (docSnap) => {
-                    if (docSnap.exists() && docSnap.data().tasks) {
-                        const savedData = docSnap.data().tasks;
-                        // Map old data format to new format that includes timeSpent
-                        tasks = savedData.map(t => ({ 
-                            id: t.id, 
-                            name: t.name, 
-                            completed: new Set(t.completed),
-                            timeSpent: t.timeSpent || 0 // Default to 0 seconds if older task
-                        }));
-                    } else {
-                        // Create default tasks if new user
-                        tasks = [
-                            { id: 1, name: "Morning Exercise", completed: new Set(), timeSpent: 0 },
-                            { id: 2, name: "Read 10 Pages", completed: new Set(), timeSpent: 0 }
-                        ];
-                        saveTasksToCloud(); 
-                    }
-                    
-                    // Update UI immediately whenever data changes across any device
-                    renderTracker();
-                    renderHeatmap();
-                    updateTimerDropdown();
-                });
-
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('hidden');
-                if(unsubscribeSnapshot) unsubscribeSnapshot(); // Stop listening to DB
-                tasksDocRef = null;
-                tasks = [];
-            }
-        });
-
-        async function loginWithGoogle() {
-            try { await signInWithPopup(auth, provider); } 
-            catch (error) { alert("Login Failed: " + error.message); }
-        }
-
-        async function logout() {
-            try { await signOut(auth); } 
-            catch (error) { console.error("Logout Error:", error); }
-        }
+        // Login & Logout Functions 
+        async function loginWithGoogle() { alert("Auth is bypassed for local testing."); }
+        async function logout() { alert("Auth is bypassed for local testing."); }
 
         async function saveTasksToCloud() {
             if (!tasksDocRef) return;
@@ -408,7 +370,6 @@
             }
         }
 
-        // --- THEME LOGIC ---
         function toggleTheme() {
             const htmlNode = document.documentElement;
             const current = htmlNode.getAttribute("data-theme") === 'light' ? 'dark' : 'light';
@@ -431,12 +392,37 @@
             populateYearDropdown();
             document.getElementById("month-select").value = selectedMonth;
             setTimerDuration();
+
+            // MOCK AUTHENTICATION BYPASS
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('user-email').innerText = "Testing @ Localhost";
+            document.getElementById('user-email').style.display = "block";
+            
+            tasksDocRef = doc(db, "users", "localhost_test_user");
+            document.getElementById("task-list").innerHTML = "<tr><td colspan='4'>Syncing test data...</td></tr>";
+
+            unsubscribeSnapshot = onSnapshot(tasksDocRef, (docSnap) => {
+                if (docSnap.exists() && docSnap.data().tasks) {
+                    const savedData = docSnap.data().tasks;
+                    tasks = savedData.map(t => ({ 
+                        id: t.id, 
+                        name: t.name, 
+                        completed: new Set(t.completed),
+                        timeSpent: t.timeSpent || 0 
+                    }));
+                } else {
+                    tasks = [ { id: 1, name: "Local Test Habit", completed: new Set(), timeSpent: 0 } ];
+                    saveTasksToCloud(); 
+                }
+                renderTracker();
+                renderHeatmap();
+                updateTimerDropdown();
+            });
         };
 
         // --- CONNECTED TIMER LOGIC ---
-        let timeLimit = 1800; 
-        let timeLeft = timeLimit; 
-        let timerInterval = null;
+        let timeLimit = 1800; let timeLeft = timeLimit; let timerInterval = null;
 
         function updateTimerDropdown() {
             const select = document.getElementById("timer-task-select");
@@ -452,6 +438,17 @@
             pauseTimer(); timeLimit = parseInt(document.getElementById("timer-duration").value); timeLeft = timeLimit; updateTimerDisplay();
         }
 
+        function formatDisplayTime(seconds) {
+            if (seconds >= 3600) {
+                let h = Math.floor(seconds / 3600);
+                let m = Math.floor((seconds % 3600) / 60);
+                return `${h} hour${h > 1 ? 's' : ''} and ${m} minute${m !== 1 ? 's' : ''}`;
+            } else {
+                let m = Math.floor(seconds / 60);
+                return `${m} minute${m !== 1 ? 's' : ''}`;
+            }
+        }
+
         function updateTimerDisplay() {
             let mins = Math.floor(timeLeft / 60).toString().padStart(2, '0'); let secs = (timeLeft % 60).toString().padStart(2, '0'); let hours = Math.floor(timeLeft / 3600);
             if (hours > 0) {
@@ -462,188 +459,138 @@
             document.getElementById("timer-progress").style.strokeDashoffset = offset;
         }
 
+        // UPDATED START TIMER: Triggers success modal and auto-checks the task for today
         function startTimer() {
             if (timerInterval) return;
             const selectedTaskId = document.getElementById("timer-task-select").value;
-            
-            // NEW: Calculate the exact timestamp when the timer should finish
             const endTime = Date.now() + (timeLeft * 1000);
 
             timerInterval = setInterval(() => {
-                // NEW: Constantly check the true system clock to see how much time is remaining
                 const newTimeLeft = Math.round((endTime - Date.now()) / 1000);
 
                 if (newTimeLeft > 0) { 
-                    timeLeft = newTimeLeft; 
-                    updateTimerDisplay(); 
+                    timeLeft = newTimeLeft; updateTimerDisplay(); 
                 } else {
-                    clearInterval(timerInterval); 
-                    timerInterval = null; 
-                    timeLeft = 0;
-                    updateTimerDisplay(); // Force display to 00:00
+                    // TIMER COMPLETED FULLY!
+                    clearInterval(timerInterval); timerInterval = null; 
+                    timeLeft = 0; updateTimerDisplay(); 
                     
+                    let timeFormatted = formatDisplayTime(timeLimit);
+                    let successMessage = `Congratulations you have completed ${timeFormatted}!`;
+
                     if (selectedTaskId) {
                         let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
                         if (taskToUpdate) {
                             taskToUpdate.timeSpent += timeLimit; 
+                            
+                            // AUTO-CHECK OFF THE TASK FOR TODAY
+                            const todayString = formatDate(new Date());
+                            taskToUpdate.completed.add(todayString);
+                            
                             saveTasksToCloud(); 
-                            alert(`Focus complete! Added ${Math.round(timeLimit / 60)} minutes to "${taskToUpdate.name}".`);
+                            successMessage = `Congratulations you have completed ${timeFormatted} in "${taskToUpdate.name}"!`;
                         }
-                    } else { alert("Focus session complete!"); }
+                    }
+                    
+                    showSuccessModal(successMessage);
                     resetTimer();
                 }
-            }, 1000); // Even if the browser slows this 1000ms tick down, the clock math above corrects it!
+            }, 1000); 
+        }
+
+        // NEW STOP TIMER: Logs partial time and resets
+        function stopTimer() {
+            if (!timerInterval && timeLeft === timeLimit) return; // Ignore if timer hasn't started
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            const selectedTaskId = document.getElementById("timer-task-select").value;
+            const timeSpentThisSession = timeLimit - timeLeft; // Calculate exact elapsed seconds
+
+            if (selectedTaskId && timeSpentThisSession > 0) {
+                let taskToUpdate = tasks.find(t => t.id == selectedTaskId);
+                if (taskToUpdate) {
+                    taskToUpdate.timeSpent += timeSpentThisSession;
+                    saveTasksToCloud();
+                    let timeFormatted = formatDisplayTime(timeSpentThisSession);
+                    // Optional: You can remove this alert if you want Stop to be completely silent
+                    alert(`Logged ${timeFormatted} to "${taskToUpdate.name}".`);
+                }
+            }
+            resetTimer();
         }
 
         function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
         function resetTimer() { setTimerDuration(); }
-        
-        // --- UI RENDERING LOGIC ---
-        function populateYearDropdown() {
-            const select = document.getElementById("year-select");
-            for(let y = today.getFullYear() - 2; y <= today.getFullYear() + 2; y++) {
-                let opt = document.createElement("option"); opt.value = y; opt.innerText = y;
-                if(y === selectedYear) opt.selected = true; select.appendChild(opt);
-            }
-        }
 
+        // --- MODALS ---
+        function showSuccessModal(msg) {
+            document.getElementById("success-msg").innerText = msg;
+            document.getElementById("success-modal").classList.add("active");
+        }
+        function closeSuccessModal() { document.getElementById("success-modal").classList.remove("active"); }
+
+        const modal = document.getElementById("delete-modal");
+        function openModal(taskId) { taskToDeleteId = taskId; modal.classList.add("active"); }
+        function closeModal() { taskToDeleteId = null; modal.classList.remove("active"); }
+        function confirmDelete() { if (taskToDeleteId !== null) { tasks = tasks.filter(t => t.id !== taskToDeleteId); saveTasksToCloud(); closeModal(); } }
+
+        // --- UI RENDERING LOGIC ---
+        function populateYearDropdown() { const select = document.getElementById("year-select"); for(let y = today.getFullYear() - 2; y <= today.getFullYear() + 2; y++) { let opt = document.createElement("option"); opt.value = y; opt.innerText = y; if(y === selectedYear) opt.selected = true; select.appendChild(opt); } }
         function changeYear() { selectedYear = parseInt(document.getElementById("year-select").value); renderHeatmap(); renderTracker(); }
 
         function renderHeatmap() {
-            const container = document.getElementById("heatmap"); 
-            container.innerHTML = "";
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
+            const container = document.getElementById("heatmap"); container.innerHTML = ""; const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             for (let m = 0; m < 12; m++) {
                 const monthWrapper = document.createElement("div"); monthWrapper.className = "month-block";
-                const label = document.createElement("div"); label.className = "month-label"; label.innerText = monthNames[m];
-                monthWrapper.appendChild(label);
-                
+                const label = document.createElement("div"); label.className = "month-label"; label.innerText = monthNames[m]; monthWrapper.appendChild(label);
                 const grid = document.createElement("div"); grid.className = "month-grid";
-                const daysInMonth = getDaysInMonth(selectedYear, m);
-                const firstDay = new Date(selectedYear, m, 1).getDay();
-
-                for (let i = 0; i < firstDay; i++) {
-                    let emptyCell = document.createElement("div"); emptyCell.className = "heat-cell empty"; grid.appendChild(emptyCell);
-                }
-
+                const daysInMonth = getDaysInMonth(selectedYear, m); const firstDay = new Date(selectedYear, m, 1).getDay();
+                for (let i = 0; i < firstDay; i++) { let emptyCell = document.createElement("div"); emptyCell.className = "heat-cell empty"; grid.appendChild(emptyCell); }
                 for (let d = 1; d <= daysInMonth; d++) {
-                    let dateString = formatDate(new Date(selectedYear, m, d));
-                    let completions = tasks.filter(t => t.completed.has(dateString)).length;
-                    
-                    let cell = document.createElement("div"); cell.className = "heat-cell";
-                    cell.setAttribute('data-tip', `${dateString}: ${completions} task(s)`);
-                    
+                    let dateString = formatDate(new Date(selectedYear, m, d)); let completions = tasks.filter(t => t.completed.has(dateString)).length;
+                    let cell = document.createElement("div"); cell.className = "heat-cell"; cell.setAttribute('data-tip', `${dateString}: ${completions} task(s)`);
                     if (completions > 0) {
-                        if (completions === 1) cell.classList.add("l1");
-                        else if (completions === 2) cell.classList.add("l2");
-                        else if (completions === 3) cell.classList.add("l3");
-                        else cell.classList.add("l4");
-                    }
-                    grid.appendChild(cell);
-                }
-                monthWrapper.appendChild(grid); container.appendChild(monthWrapper);
+                        if (completions === 1) cell.classList.add("l1"); else if (completions === 2) cell.classList.add("l2"); else if (completions === 3) cell.classList.add("l3"); else cell.classList.add("l4");
+                    } grid.appendChild(cell);
+                } monthWrapper.appendChild(grid); container.appendChild(monthWrapper);
             }
         }
 
         function changeMonth() { selectedMonth = parseInt(document.getElementById("month-select").value); renderTracker(); }
         function getDaysInMonth(year, month) { return new Date(year, month + 1, 0).getDate(); }
-        function formatDate(dateObj) {
-            let y = dateObj.getFullYear(); let m = (dateObj.getMonth() + 1).toString().padStart(2, '0'); let d = dateObj.getDate().toString().padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        }
-        
-        function formatTimeSpent(totalSeconds) {
-            if (!totalSeconds) return "0m";
-            const h = Math.floor(totalSeconds / 3600);
-            const m = Math.floor((totalSeconds % 3600) / 60);
-            if (h > 0) return `${h}h ${m}m`;
-            return `${m}m`;
-        }
+        function formatDate(dateObj) { let y = dateObj.getFullYear(); let m = (dateObj.getMonth() + 1).toString().padStart(2, '0'); let d = dateObj.getDate().toString().padStart(2, '0'); return `${y}-${m}-${d}`; }
+        function formatTimeSpent(totalSeconds) { if (!totalSeconds) return "0m"; const h = Math.floor(totalSeconds / 3600); const m = Math.floor((totalSeconds % 3600) / 60); if (h > 0) return `${h}h ${m}m`; return `${m}m`; }
 
         function renderTracker() {
-            const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
-            const thead = document.getElementById("table-header"); const tbody = document.getElementById("task-list");
-            
+            const daysInMonth = getDaysInMonth(selectedYear, selectedMonth); const thead = document.getElementById("table-header"); const tbody = document.getElementById("task-list");
             thead.innerHTML = '<th>Habit / Task Name</th>';
             for (let i = 1; i <= daysInMonth; i++) { thead.innerHTML += `<th>${i}</th>`; }
-            
-            // Added Time Column
             thead.innerHTML += `<th class="progress-cell">Progress</th><th>Time Logged</th><th>Del</th>`;
-
             tbody.innerHTML = "";
             tasks.forEach(task => {
-                let tr = document.createElement("tr");
-                let tdName = document.createElement("td"); tdName.innerText = task.name; tdName.title = task.name; tr.appendChild(tdName);
-                
+                let tr = document.createElement("tr"); let tdName = document.createElement("td"); tdName.innerText = task.name; tdName.title = task.name; tr.appendChild(tdName);
                 let monthlyCompletedCount = 0;
                 for (let i = 1; i <= daysInMonth; i++) {
                     let td = document.createElement("td"); let cb = document.createElement("input"); cb.type = "checkbox";
                     let dateString = formatDate(new Date(selectedYear, selectedMonth, i));
-                    
                     if (task.completed.has(dateString)) { cb.checked = true; monthlyCompletedCount++; }
-                    
-                    cb.onchange = () => toggleTaskCompletion(task.id, dateString, cb.checked);
-                    td.appendChild(cb); tr.appendChild(td);
+                    cb.onchange = () => toggleTaskCompletion(task.id, dateString, cb.checked); td.appendChild(cb); tr.appendChild(td);
                 }
-
                 let progressPercent = (monthlyCompletedCount / daysInMonth) * 100;
-                let tdProg = document.createElement("td"); tdProg.className = "progress-cell";
-                tdProg.innerHTML = `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width: ${progressPercent}%"></div></div>`;
-                tr.appendChild(tdProg);
-
-                // Add Time Display Cell
-                let tdTime = document.createElement("td");
-                tdTime.className = "time-cell";
-                tdTime.innerText = formatTimeSpent(task.timeSpent);
-                tr.appendChild(tdTime);
-
-                let tdAction = document.createElement("td");
-                tdAction.innerHTML = `<button class="delete-task-btn" onclick="openModal(${task.id})">×</button>`;
-                tr.appendChild(tdAction); tbody.appendChild(tr);
+                let tdProg = document.createElement("td"); tdProg.className = "progress-cell"; tdProg.innerHTML = `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width: ${progressPercent}%"></div></div>`; tr.appendChild(tdProg);
+                let tdTime = document.createElement("td"); tdTime.className = "time-cell"; tdTime.innerText = formatTimeSpent(task.timeSpent); tr.appendChild(tdTime);
+                let tdAction = document.createElement("td"); tdAction.innerHTML = `<button class="delete-task-btn" onclick="openModal(${task.id})">×</button>`; tr.appendChild(tdAction); tbody.appendChild(tr);
             });
         }
 
-        function toggleTaskCompletion(taskId, dateString, isChecked) {
-            let task = tasks.find(t => t.id === taskId);
-            if(isChecked) { task.completed.add(dateString); } else { task.completed.delete(dateString); }
-            saveTasksToCloud(); // Triggers snapshot instantly
-        }
+        function toggleTaskCompletion(taskId, dateString, isChecked) { let task = tasks.find(t => t.id === taskId); if(isChecked) { task.completed.add(dateString); } else { task.completed.delete(dateString); } saveTasksToCloud(); }
+        function addTask() { const input = document.getElementById("new-task-input"); const val = input.value.trim(); if(val !== "") { tasks.push({ id: Date.now(), name: val, completed: new Set(), timeSpent: 0 }); input.value = ""; saveTasksToCloud(); } }
 
-        function addTask() {
-            const input = document.getElementById("new-task-input"); const val = input.value.trim();
-            if(val !== "") { 
-                tasks.push({ id: Date.now(), name: val, completed: new Set(), timeSpent: 0 }); 
-                input.value = ""; 
-                saveTasksToCloud(); // Triggers snapshot instantly
-            }
-        }
-
-        const modal = document.getElementById("delete-modal");
-        function openModal(taskId) { taskToDeleteId = taskId; modal.classList.add("active"); }
-        function closeModal() { taskToDeleteId = null; modal.classList.remove("active"); }
-        function confirmDelete() {
-            if (taskToDeleteId !== null) { 
-                tasks = tasks.filter(t => t.id !== taskToDeleteId); 
-                saveTasksToCloud(); 
-                closeModal(); 
-            }
-        }
-
-        // EXPORT FUNCTIONS TO WINDOW
-        window.loginWithGoogle = loginWithGoogle;
-        window.logout = logout;
-        window.toggleTheme = toggleTheme;
-        window.setTimerDuration = setTimerDuration;
-        window.startTimer = startTimer;
-        window.pauseTimer = pauseTimer;
-        window.resetTimer = resetTimer;
-        window.changeYear = changeYear;
-        window.changeMonth = changeMonth;
-        window.addTask = addTask;
-        window.openModal = openModal;
-        window.closeModal = closeModal;
-        window.confirmDelete = confirmDelete;
+        window.loginWithGoogle = loginWithGoogle; window.logout = logout; window.toggleTheme = toggleTheme; window.setTimerDuration = setTimerDuration; window.startTimer = startTimer; window.stopTimer = stopTimer; window.pauseTimer = pauseTimer; window.resetTimer = resetTimer; window.changeYear = changeYear; window.changeMonth = changeMonth; window.addTask = addTask; window.openModal = openModal; window.closeModal = closeModal; window.confirmDelete = confirmDelete; window.closeSuccessModal = closeSuccessModal;
     </script>
 </body>
 </html>
